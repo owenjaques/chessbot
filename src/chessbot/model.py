@@ -42,17 +42,23 @@ class ModelInput:
                 self.pawns[color][pawn_index[color]] = [rank, file]
                 pawn_index[color] += 1
 
+        # sort per piece type according to the rank then the file if rank is the same
+        self.rooks = np.sort(self.rooks, axis=1)
+        self.knights = np.sort(self.knights, axis=1)
+        self.bishops = np.sort(self.bishops, axis=1)
+        self.pawns = np.sort(self.pawns, axis=1)
+
     def get_input(self):
-        return np.array([
-            self.rooks,
-            self.knights,
-            self.bishops,
-            self.queen,
-            self.king,
-            self.pawns
+        return np.concatenate([
+            self.rooks.flatten(),
+            self.knights.flatten(),
+            self.bishops.flatten(),
+            self.queen.flatten(),
+            self.king.flatten(),
+            self.pawns.flatten()
         ])
 
 if __name__ == '__main__':
     board = chess.Board()
-    model_input = ModelInput(board)
+    model_input = ModelInput(board).get_input()
     print(model_input)
