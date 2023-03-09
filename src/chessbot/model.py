@@ -25,16 +25,17 @@ class ModelInput:
             color = int(piece.color)
             rank = chess.square_rank(square)
             file = chess.square_file(square)
-            if piece.piece_type == chess.ROOK:
+
+            if piece.piece_type == chess.ROOK and rook_index[color] < 2:
                 self.rooks[color][rook_index[color]] = [1, rank, file]
                 rook_index[color] += 1
-            elif piece.piece_type == chess.KNIGHT:
+            elif piece.piece_type == chess.KNIGHT and knight_index[color] < 2:
                 self.knights[color][knight_index[color]] = [1, rank, file]
                 knight_index[color] += 1
-            elif piece.piece_type == chess.BISHOP:
+            elif piece.piece_type == chess.BISHOP and bishop_index[color] < 2:
                 self.bishops[color][bishop_index[color]] = [1, rank, file]
                 bishop_index[color] += 1
-            elif piece.piece_type == chess.QUEEN:
+            elif piece.piece_type == chess.QUEEN and self.queen[color][0] == -1:
                 self.queen[color] = [1, rank, file]
             elif piece.piece_type == chess.KING:
                 self.king[color] = [1, rank, file]
