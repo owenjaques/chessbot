@@ -83,10 +83,13 @@ class ModelInput:
             self.potential_game_outcome[0] = 0.66
         else:
             if (game_outcome.winner == chess.WHITE and self.board.ply() % 2 == 1) or (game_outcome.winner == chess.BLACK and self.board.ply() % 2 == 0):
+                # win
                 self.potential_game_outcome[0] = 1
             elif (game_outcome.winner == chess.WHITE and self.board.ply() % 2 == 0) or (game_outcome.winner == chess.BLACK and self.board.ply() % 2 == 1):
+                # loss
                 self.potential_game_outcome[0] = 0
             else:
+                # draw
                 self.potential_game_outcome[0] = 0.33
 
     def get_input(self):
