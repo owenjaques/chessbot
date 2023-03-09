@@ -10,9 +10,13 @@ class ModelInput:
     king = np.full((2, 3), -1.0)
     pawns = np.full((2, 8, 3), -1.0)
 
+    # Miscenllaneous data that is useful for the model
+    castling_rights = np.empty(4)
+
     def __init__(self, board):
         self.board = board
         self.parse_board()
+        self.parse_castling_rights()
         
     def parse_board(self):
         rook_index = np.zeros(2, dtype=int)
@@ -65,6 +69,12 @@ class ModelInput:
         self.king[self.king == -1] = 0
         self.pawns[self.pawns == -1] = 0
 
+    def parse_castling_rights(self):
+        self.castling_rights[0] = int(self.board.has_kingside_castling_rights(chess.WHITE))
+        self.castling_rights[1] = int(self.board.has_queenside_castling_rights(chess.WHITE))
+        self.castling_rights[2] = int(self.board.has_kingside_castling_rights(chess.BLACK))
+        self.castling_rights[3] = int(self.board.has_queenside_castling_rights(chess.BLACK))
+
     def get_input(self):
         return np.concatenate([
             self.rooks.flatten(),
@@ -72,7 +82,8 @@ class ModelInput:
             self.bishops.flatten(),
             self.queen.flatten(),
             self.king.flatten(),
-            self.pawns.flatten()
+            self.pawns.flatten(),
+            self.castling_rights
         ])
 
 if __name__ == '__main__':
