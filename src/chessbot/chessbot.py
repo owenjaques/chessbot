@@ -1,5 +1,6 @@
 import random
 import numpy as np
+from .model import ModelInput
 
 class ChessBot:
     def __init__(self, model, exploration_rate=0.0):
@@ -27,10 +28,10 @@ class ChessBot:
 
         for move in moves:
             board.push(move)
-            model_inputs.append(hash(board.fen())) # TODO: Change to using a better representation
+            model_inputs.append(ModelInput(board).get_input())
             board.pop()
 
-        return moves, np.array(model_inputs).reshape(-1, 1)
+        return moves, np.array(model_inputs)
     
     def get_best_move(self, moves, model_inputs):
         predictions = self.model.predict(model_inputs)
