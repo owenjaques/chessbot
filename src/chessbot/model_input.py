@@ -12,11 +12,13 @@ class ModelInput:
 
     # Miscenllaneous data that is useful for the model
     castling_rights = np.empty(4)
+    potential_game_outcome = np.empty(1)
 
     def __init__(self, board):
         self.board = board
         self.parse_board()
         self.parse_castling_rights()
+        self.parse_potential_game_outcome()
         
     def parse_board(self):
         rook_index = np.zeros(2, dtype=int)
@@ -75,6 +77,18 @@ class ModelInput:
         self.castling_rights[2] = int(self.board.has_kingside_castling_rights(chess.BLACK))
         self.castling_rights[3] = int(self.board.has_queenside_castling_rights(chess.BLACK))
 
+    def parse_potential_game_outcome(self):
+        game_outcome = self.board.outcome(claim_draw=True)
+        if game_outcome is None:
+            self.potential_game_outcome[0] = 0.66
+        else:
+            if (game_outcome.winner == chess.WHITE and self.board.ply() % 2 == 1) or (game_outcome.winner == chess.BLACK and self.board.ply() % 2 == 0):
+                self.potential_game_outcome[0] = 1
+            elif (game_outcome.winner == chess.WHITE and self.board.ply() % 2 == 0) or (game_outcome.winner == chess.BLACK and self.board.ply() % 2 == 1):
+                self.potential_game_outcome[0] = 0
+            else:
+                self.potential_game_outcome[0] = 0.33
+
     def get_input(self):
         return np.concatenate([
             self.rooks.flatten(),
@@ -83,11 +97,13 @@ class ModelInput:
             self.queen.flatten(),
             self.king.flatten(),
             self.pawns.flatten(),
-            self.castling_rights
+            self.castling_rights,
+            self.potential_game_outcome
         ])
 
 if __name__ == '__main__':
     board = chess.Board()
+    board.push(chess.Move.from_uci('e2e4'))
     model_input = ModelInput(board).get_input()
     print(model_input)
     print(model_input.shape)
