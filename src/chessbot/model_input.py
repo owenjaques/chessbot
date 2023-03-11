@@ -10,6 +10,9 @@ class ModelInput:
     king = np.full((2, 3), -1.0)
     pawns = np.full((2, 8, 3), -1.0)
 
+    #Attacked squares 
+    attacks = np.zeros(64)
+
     # Miscenllaneous data that is useful for the model
     castling_rights = np.empty(4)
     potential_game_outcome = np.empty(1)
@@ -19,6 +22,7 @@ class ModelInput:
         self.parse_board()
         self.parse_castling_rights()
         self.parse_potential_game_outcome()
+        self.atk_lst()
         
     def parse_board(self):
         rook_index = np.zeros(2, dtype=int)
@@ -56,12 +60,12 @@ class ModelInput:
         self.pawns = np.sort(self.pawns, axis=1)
 
         # Normalise positions between 0 and 1 (0 will represent the position of a piece which has been captured)
-        self.rooks[:, :, 1:] = (self.rooks[:, :, 1:] + 1) / 7
-        self.knights[:, :, 1:] = (self.knights[:, :, 1:] + 1) / 7
-        self.bishops[:, :, 1:] = (self.bishops[:, :, 1:] + 1) / 7
-        self.queen[:, 1:] = (self.queen[:, 1:] + 1) / 7
-        self.king[:, 1:] = (self.king[:, 1:] + 1) / 7
-        self.pawns[:, :, 1:] = (self.pawns[:, :, 1:] + 1) / 7
+        self.rooks[:, :, 1:] = (self.rooks[:, :, 1:] + 1) / 8
+        self.knights[:, :, 1:] = (self.knights[:, :, 1:] + 1) / 8
+        self.bishops[:, :, 1:] = (self.bishops[:, :, 1:] + 1) / 8
+        self.queen[:, 1:] = (self.queen[:, 1:] + 1) / 8
+        self.king[:, 1:] = (self.king[:, 1:] + 1) / 8
+        self.pawns[:, :, 1:] = (self.pawns[:, :, 1:] + 1) / 8
 
         # Normalise existence of pieces to be either 0 or 1
         self.rooks[self.rooks == -1] = 0
@@ -92,6 +96,23 @@ class ModelInput:
                 # draw
                 self.potential_game_outcome[0] = 0.33
 
+
+    def atk_lst(self):
+        white_atk = chess.SquareSet()
+        black_atk = chess.SquareSet()
+        for attacker in chess.SquareSet(self.board.occupied_co[chess.WHITE]):
+            white_atk |= board.attacks(attacker)
+        for attacker in chess.SquareSet(self.board.occupied_co[chess.BLACK]):
+            black_atk |= board.attacks(attacker)
+
+        for i in list(white_atk):
+            self.attacks[i] += (1/3)
+        
+        for i in list(black_atk):
+            self.attacks[i] += (2/3)
+        
+
+
     def get_input(self):
         return np.concatenate([
             self.rooks.flatten(),
@@ -101,12 +122,13 @@ class ModelInput:
             self.king.flatten(),
             self.pawns.flatten(),
             self.castling_rights,
-            self.potential_game_outcome
+            self.potential_game_outcome,
+            self.attacks
         ])
 
 if __name__ == '__main__':
     board = chess.Board()
-    board.push(chess.Move.from_uci('e2e4'))
+    #board.push(chess.Move.from_uci('e2e4'))
     model_input = ModelInput(board).get_input()
     print(model_input)
     print(model_input.shape)
