@@ -16,12 +16,14 @@ class ModelInput:
     # Miscenllaneous data that is useful for the model
     castling_rights = np.empty(4)
     potential_game_outcome = np.empty(1)
+    next_to_move = np.empty(1)
 
     def __init__(self, board):
         self.board = board
         self.parse_board()
         self.parse_castling_rights()
         self.parse_potential_game_outcome()
+        self.get_next_to_move()
         self.atk_lst()
         
     def parse_board(self):
@@ -96,14 +98,17 @@ class ModelInput:
                 # draw
                 self.potential_game_outcome[0] = 0.33
 
+    def get_next_to_move(self):
+        self.next_to_move[0] = 0 if self.board.turn else 1
+
 
     def atk_lst(self):
         white_atk = chess.SquareSet()
         black_atk = chess.SquareSet()
         for attacker in chess.SquareSet(self.board.occupied_co[chess.WHITE]):
-            white_atk |= board.attacks(attacker)
+            white_atk |= self.board.attacks(attacker)
         for attacker in chess.SquareSet(self.board.occupied_co[chess.BLACK]):
-            black_atk |= board.attacks(attacker)
+            black_atk |= self.board.attacks(attacker)
 
         for i in list(white_atk):
             self.attacks[i] += (1/3)
@@ -123,12 +128,13 @@ class ModelInput:
             self.pawns.flatten(),
             self.castling_rights,
             self.potential_game_outcome,
-            self.attacks
+            self.attacks,
+            self.next_to_move
         ])
 
 if __name__ == '__main__':
     board = chess.Board()
-    #board.push(chess.Move.from_uci('e2e4'))
+    board.push(chess.Move.from_uci('e2e4'))
     model_input = ModelInput(board).get_input()
     print(model_input)
     print(model_input.shape)
