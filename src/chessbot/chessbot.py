@@ -11,31 +11,32 @@ class ChessBot:
         self.color = color
         
     def move(self, board):
-        moves, model_inputs = self.get_potential_moves(board)
+        moves = list(board.legal_moves)
         
         has_fit = hasattr(self.model, 'n_iter_')
         if not has_fit or random.random() < self.exploration_rate:
-            move_index, move = random.choice(list(enumerate(moves)))
-            model_input = model_inputs[move_index]
+            move = random.choice(moves)
+            model_input = self.convert_move_to_model_input(board, move)
         else:
-            model_input, move = self.get_best_move(moves, model_inputs)
+            model_input, move = self.get_best_move(moves, board)
         
         self.moves_made.append(model_input)
         
         return move
 
-    def get_potential_moves(self, board):
-        moves = list(board.legal_moves)
+    def convert_move_to_model_input(self, board, move):
+        board.push(move)
+        model_input = ModelInput(board).get_input()
+        board.pop()
+        return model_input
+    
+    def get_best_move(self, moves, board):
         model_inputs = []
 
         for move in moves:
-            board.push(move)
-            model_inputs.append(ModelInput(board).get_input())
-            board.pop()
+            model_inputs.append(self.convert_move_to_model_input(board, move))
 
-        return moves, np.array(model_inputs)
-    
-    def get_best_move(self, moves, model_inputs):
         predictions = self.model.predict(model_inputs)
         move_index = predictions.argmax() if self.color == chess.WHITE else predictions.argmin()
+
         return model_inputs[move_index], moves[move_index]
