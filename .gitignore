@@ -1,2 +1,4 @@
 env
 __pycache__
+src/chessbot_wins_data
+src/chessbot_weights
