@@ -36,6 +36,7 @@ class ChessBot:
             model_inputs.append(self.convert_move_to_model_input(board, move))
 
         predictions = self.model.predict(np.array(model_inputs))
+        predictions = predictions[:, 2]
         move_index = predictions.argmax() if self.color == chess.WHITE else predictions.argmin()
 
         return model_inputs[move_index], moves[move_index]

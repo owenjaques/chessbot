@@ -125,7 +125,7 @@ class ModelInput:
             self.pawns.flatten(),
             self.castling_rights,
             self.potential_game_outcome,
-            self.attacks,
+            # self.attacks,
             self.next_to_move
         ])
     
