@@ -13,8 +13,7 @@ class ChessBot:
     def move(self, board):
         moves = list(board.legal_moves)
         
-        has_fit = hasattr(self.model, 'n_iter_')
-        if not has_fit or random.random() < self.exploration_rate:
+        if random.random() < self.exploration_rate:
             move = random.choice(moves)
             model_input = self.convert_move_to_model_input(board, move)
         else:
@@ -36,7 +35,7 @@ class ChessBot:
         for move in moves:
             model_inputs.append(self.convert_move_to_model_input(board, move))
 
-        predictions = self.model.predict(model_inputs)
+        predictions = self.model.predict(np.array(model_inputs))
         move_index = predictions.argmax() if self.color == chess.WHITE else predictions.argmin()
 
         return model_inputs[move_index], moves[move_index]
