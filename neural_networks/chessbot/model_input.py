@@ -101,7 +101,6 @@ class ModelInput:
     def get_next_to_move(self):
         self.next_to_move[0] = 0 if self.board.turn else 1
 
-
     def atk_lst(self):
         white_atk = chess.SquareSet()
         black_atk = chess.SquareSet()
@@ -116,8 +115,6 @@ class ModelInput:
         for i in list(black_atk):
             self.attacks[i] += (2/3)
         
-
-
     def get_input(self):
         return np.concatenate([
             self.rooks.flatten(),
@@ -131,10 +128,45 @@ class ModelInput:
             self.attacks,
             self.next_to_move
         ])
+    
+class SimpleModelInput:
+    def __init__(self, board):
+        self.board = board
+        self.one_hot_board = np.zeros((8, 8, 12))
+        self.parse_board()
+
+    def piece_to_index(self, piece):
+        if piece.piece_type == chess.PAWN:
+            idx = 0
+        elif piece.piece_type == chess.KNIGHT:
+            idx = 1
+        elif piece.piece_type == chess.BISHOP:
+            idx = 2
+        elif piece.piece_type == chess.ROOK:
+            idx = 3
+        elif piece.piece_type == chess.QUEEN:
+            idx = 4
+        elif piece.piece_type == chess.KING:
+            idx = 5
+        if piece.color == chess.BLACK:
+            idx += 6
+        return idx
+
+    def parse_board(self):
+        for square, piece in self.board.piece_map().items():
+            rank = chess.square_rank(square)
+            file = chess.square_file(square)
+            self.one_hot_board[rank, file, self.piece_to_index(piece)] = 1
+
+    def get_input(self):
+        return self.one_hot_board
+    
+    def get_flattened_input(self):
+        return self.one_hot_board.flatten()
 
 if __name__ == '__main__':
     board = chess.Board()
     board.push(chess.Move.from_uci('e2e4'))
-    model_input = ModelInput(board).get_input()
-    print(model_input)
+    model_input = SimpleModelInput(board).get_input()
+    print(model_input[:,:,0])
     print(model_input.shape)
