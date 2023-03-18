@@ -56,10 +56,10 @@ class ModelInput:
                 pawn_index[color] += 1
 
         # sort per piece type according to the rank then the file if rank is the same
-        self.rooks = np.sort(self.rooks, axis=1)
-        self.knights = np.sort(self.knights, axis=1)
-        self.bishops = np.sort(self.bishops, axis=1)
-        self.pawns = np.sort(self.pawns, axis=1)
+        # self.rooks = np.sort(self.rooks, axis=1)
+        # self.knights = np.sort(self.knights, axis=1)
+        # self.bishops = np.sort(self.bishops, axis=1)
+        # self.pawns = np.sort(self.pawns, axis=1)
 
         # Normalise positions between 0 and 1 (0 will represent the position of a piece which has been captured)
         self.rooks[:, :, 1:] = (self.rooks[:, :, 1:] + 1) / 8
@@ -167,6 +167,6 @@ class SimpleModelInput:
 if __name__ == '__main__':
     board = chess.Board()
     board.push(chess.Move.from_uci('e2e4'))
-    model_input = SimpleModelInput(board).get_input()
+    model_input = ModelInput(board).get_input()
     print(model_input[:,:,0])
     print(model_input.shape)
