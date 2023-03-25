@@ -142,7 +142,7 @@ class ModelInput:
         if self.input_type == 'positions':
             return self.get_flattened_positions().shape[0]
         if self.input_type == 'all':
-            return {0, self.get_flattened_positions().shape[0], 1, self.attacks.shape[0], 1, self.get_misc_features().shape[0]}
+            return np.array([self.get_flattened_positions().shape[0], self.attacks.shape[0], self.get_misc_features().shape[0]])
     
 class SimpleModelInput:
     def __init__(self, board):
