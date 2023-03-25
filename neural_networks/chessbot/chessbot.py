@@ -1,7 +1,7 @@
 import random
 import numpy as np
 import chess
-from .model_input import ModelInput
+from modelinput import ModelInput
 
 class ChessBot:
     def __init__(self, model, color, exploration_rate=0.0):
@@ -25,7 +25,7 @@ class ChessBot:
 
     def convert_move_to_model_input(self, board, move):
         board.push(move)
-        model_input = ModelInput(board).get_input()
+        model_input = ModelInput().get_input(board)
         board.pop()
         return model_input
     
