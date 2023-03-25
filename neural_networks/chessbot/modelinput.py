@@ -136,7 +136,7 @@ class ModelInput:
         
         self.parse_misc_features(board)
         self.atk_lst(board)
-        return [self.get_flattened_positions(), self.attacks, self.get_misc_features()]
+        return self.get_flattened_positions(), self.attacks, self.get_misc_features()
 
     def input_length(self):
         if self.input_type == 'positions':
