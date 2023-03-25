@@ -90,6 +90,7 @@ class ModelInput:
         self.next_to_move[0] = 0 if board.turn else 1
 
     def atk_lst(self, board):
+        self.attacks.fill(0)
         white_atk = chess.SquareSet()
         black_atk = chess.SquareSet()
         for attacker in chess.SquareSet(board.occupied_co[chess.WHITE]):
