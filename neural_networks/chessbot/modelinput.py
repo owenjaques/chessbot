@@ -103,12 +103,9 @@ class ModelInput:
         
         for i in list(black_atk):
             self.attacks[i] += (2/3)
-        
-    def get_input(self, board):
-        if self.input_type == 'positions':
-            self.parse_board(board)
 
-            return np.concatenate([
+    def get_flattened_positions(self):
+        return np.concatenate([
                 self.rooks.flatten(),
                 self.knights.flatten(),
                 self.bishops.flatten(),
@@ -116,6 +113,17 @@ class ModelInput:
                 self.king.flatten(),
                 self.pawns.flatten()
             ])
+
+    def get_input_from_fen(self, fen):
+        return self.get_input(chess.Board(fen))
+        
+    def get_input(self, board):
+        if self.input_type == 'positions':
+            self.parse_board(board)
+            return self.get_flattened_positions()
+
+    def input_length(self):
+        return self.get_flattened_positions().shape[0]
     
 class SimpleModelInput:
     def __init__(self, board):
@@ -156,5 +164,6 @@ if __name__ == '__main__':
     board = chess.Board()
     board.push(chess.Move.from_uci('e2e4'))
     model_input = ModelInput().get_input(board)
+    print(ModelInput().input_length())
     print(model_input)
     print(model_input.shape)
