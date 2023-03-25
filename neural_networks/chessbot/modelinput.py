@@ -22,6 +22,13 @@ class ModelInput:
         self.input_type = input_type
         
     def parse_board(self, board):
+        self.rooks.fill(0)
+        self.knights.fill(0)
+        self.bishops.fill(0)
+        self.queen.fill(0)
+        self.king.fill(0)
+        self.pawns.fill(0)
+
         rook_index = np.zeros(2, dtype=int)
         knight_index = np.zeros(2, dtype=int)
         bishop_index = np.zeros(2, dtype=int)
@@ -50,21 +57,13 @@ class ModelInput:
                 self.pawns[color][pawn_index[color]] = [1, rank, file]
                 pawn_index[color] += 1
 
-        # Normalise positions between 0 and 1 (0 will represent the position of a piece which has been captured)
+        # Normalise positions between 0 and 1
         self.rooks[:, :, 1:] = (self.rooks[:, :, 1:]) / 7
         self.knights[:, :, 1:] = (self.knights[:, :, 1:]) / 7
         self.bishops[:, :, 1:] = (self.bishops[:, :, 1:]) / 7
         self.queen[:, 1:] = (self.queen[:, 1:]) / 7
         self.king[:, 1:] = (self.king[:, 1:]) / 7
         self.pawns[:, :, 1:] = (self.pawns[:, :, 1:]) / 7
-
-        # Normalise existence of pieces to be either 0 or 1
-        self.rooks[self.rooks == -1] = 0
-        self.knights[self.knights == -1] = 0
-        self.bishops[self.bishops == -1] = 0
-        self.queen[self.queen == -1] = 0
-        self.king[self.king == -1] = 0
-        self.pawns[self.pawns == -1] = 0
 
     def parse_castling_rights(self, board):
         self.castling_rights[0] = int(board.has_kingside_castling_rights(chess.WHITE))
