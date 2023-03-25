@@ -113,16 +113,36 @@ class ModelInput:
                 self.pawns.flatten()
             ])
 
+    def get_misc_features(self):
+        return np.concatenate([
+                self.castling_rights,
+                self.potential_game_outcome,
+                self.next_to_move
+            ])
+
+    def parse_misc_features(self, board):
+        self.parse_castling_rights(board)
+        self.parse_potential_game_outcome(board)
+        self.get_next_to_move(board)
+
     def get_input_from_fen(self, fen):
         return self.get_input(chess.Board(fen))
         
     def get_input(self, board):
+        self.parse_board(board)
+
         if self.input_type == 'positions':
-            self.parse_board(board)
             return self.get_flattened_positions()
+        
+        self.parse_misc_features(board)
+        self.atk_lst(board)
+        return [self.get_flattened_positions(), self.attacks, self.get_misc_features()]
 
     def input_length(self):
-        return self.get_flattened_positions().shape[0]
+        if self.input_type == 'positions':
+            return self.get_flattened_positions().shape[0]
+        if self.input_type == 'all':
+            return {0, self.get_flattened_positions().shape[0], 1, self.attacks.shape[0], 1, self.get_misc_features().shape[0]}
     
 class SimpleModelInput:
     def __init__(self, board):
@@ -162,7 +182,6 @@ class SimpleModelInput:
 if __name__ == '__main__':
     board = chess.Board()
     board.push(chess.Move.from_uci('e2e4'))
-    model_input = ModelInput().get_input(board)
-    print(ModelInput().input_length())
+    model_input = ModelInput('all').get_input(board)
+    print(ModelInput('all').input_length())
     print(model_input)
-    print(model_input.shape)
