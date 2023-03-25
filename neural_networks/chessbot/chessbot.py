@@ -1,7 +1,7 @@
 import random
 import numpy as np
 import chess
-from modelinput import ModelInput
+from .modelinput import ModelInput
 
 class ChessBot:
     def __init__(self, model, color, exploration_rate=0.0):
