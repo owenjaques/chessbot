@@ -1,17 +1,34 @@
 import chess
 import numpy as np
 
+def piece_to_index(piece):
+    if piece.piece_type == chess.PAWN:
+        idx = 0
+    elif piece.piece_type == chess.KNIGHT:
+        idx = 1
+    elif piece.piece_type == chess.BISHOP:
+        idx = 2
+    elif piece.piece_type == chess.ROOK:
+        idx = 3
+    elif piece.piece_type == chess.QUEEN:
+        idx = 4
+    elif piece.piece_type == chess.KING:
+        idx = 5
+    if piece.color == chess.BLACK:
+        idx += 6
+    return idx
+
 class ModelInput:
     # Organised as [black/white, piece number, existence of piece/rank/file]
-    rooks = np.full((2, 2, 3), -1.0)
-    knights = np.full((2, 2, 3), -1.0)
-    bishops = np.full((2, 2, 3), -1.0)
-    queen = np.full((2, 3), -1.0)
-    king = np.full((2, 3), -1.0)
-    pawns = np.full((2, 8, 3), -1.0)
+    rooks = np.empty((2, 2, 3))
+    knights = np.empty((2, 2, 3))
+    bishops = np.empty((2, 2, 3))
+    queen = np.empty((2, 3))
+    king = np.empty((2, 3))
+    pawns = np.empty((2, 8, 3))
 
     #Attacked squares 
-    attacks = np.zeros(64)
+    attacks = np.empty(64)
 
     # Miscenllaneous data that is useful for the model
     castling_rights = np.empty(4)
@@ -20,6 +37,16 @@ class ModelInput:
 
     def __init__(self, input_type='positions'):
         self.input_type = input_type
+
+    def parse_simple_board(self, board):
+        simple_board = np.zeros((8, 8, 12))
+
+        for square, piece in board.piece_map().items():
+            rank = chess.square_rank(square)
+            file = chess.square_file(square)
+            simple_board[rank, file, piece_to_index(piece)] = 1
+
+        return simple_board
         
     def parse_board(self, board):
         self.rooks.fill(0)
@@ -130,8 +157,10 @@ class ModelInput:
         return self.get_input(chess.Board(fen))
         
     def get_input(self, board):
+        if self.input_type == 'simple':
+            return self.parse_simple_board(board).flatten()
+        
         self.parse_board(board)
-
         if self.input_type == 'positions':
             return self.get_flattened_positions()
         
@@ -140,49 +169,17 @@ class ModelInput:
         return self.get_flattened_positions(), self.attacks, self.get_misc_features()
 
     def input_length(self):
+        if self.input_type == 'simple':
+            return self.parse_simple_board(chess.Board()).flatten().shape[0]
+        
         if self.input_type == 'positions':
             return self.get_flattened_positions().shape[0]
-        if self.input_type == 'all':
-            return np.array([self.get_flattened_positions().shape[0], self.attacks.shape[0], self.get_misc_features().shape[0]])
-    
-class SimpleModelInput:
-    def __init__(self, board):
-        self.board = board
-        self.one_hot_board = np.zeros((8, 8, 12))
-        self.parse_board()
-
-    def piece_to_index(self, piece):
-        if piece.piece_type == chess.PAWN:
-            idx = 0
-        elif piece.piece_type == chess.KNIGHT:
-            idx = 1
-        elif piece.piece_type == chess.BISHOP:
-            idx = 2
-        elif piece.piece_type == chess.ROOK:
-            idx = 3
-        elif piece.piece_type == chess.QUEEN:
-            idx = 4
-        elif piece.piece_type == chess.KING:
-            idx = 5
-        if piece.color == chess.BLACK:
-            idx += 6
-        return idx
-
-    def parse_board(self):
-        for square, piece in self.board.piece_map().items():
-            rank = chess.square_rank(square)
-            file = chess.square_file(square)
-            self.one_hot_board[rank, file, self.piece_to_index(piece)] = 1
-
-    def get_input(self):
-        return self.one_hot_board
-    
-    def get_flattened_input(self):
-        return self.one_hot_board.flatten()
+        
+        return np.array([self.get_flattened_positions().shape[0], self.attacks.shape[0], self.get_misc_features().shape[0]])
 
 if __name__ == '__main__':
     board = chess.Board()
     board.push(chess.Move.from_uci('e2e4'))
-    model_input = ModelInput('all').get_input(board)
-    print(ModelInput('all').input_length())
+    model_input = ModelInput('simple').get_input(board)
+    print(ModelInput('simple').input_length())
     print(model_input)
