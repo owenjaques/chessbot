@@ -92,14 +92,6 @@ class ModelInput:
         self.king[:, 1:] = (self.king[:, 1:]) / 7
         self.pawns[:, :, 1:] = (self.pawns[:, :, 1:]) / 7
 
-        # Set positions of pieces that don't exist to -1
-        self.rooks[self.rooks[:, :, 0] == 0, 1:] = -1
-        self.knights[self.knights[:, :, 0] == 0, 1:] = -1
-        self.bishops[self.bishops[:, :, 0] == 0, 1:] = -1
-        self.queen[self.queen[:, 0] == 0, 1:] = -1
-        self.king[self.king[:, 0] == 0, 1:] = -1
-        self.pawns[self.pawns[:, :, 0] == 0, 1:] = -1
-
     def parse_castling_rights(self, board):
         self.castling_rights[0] = int(board.has_kingside_castling_rights(chess.WHITE))
         self.castling_rights[1] = int(board.has_queenside_castling_rights(chess.WHITE))
