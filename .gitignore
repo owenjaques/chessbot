@@ -5,3 +5,4 @@ __pycache__
 *.csv*
 search_tree/stockfish_15.1_win_x64_avx2/*
 search_tree/bad/*
+search_tree/model_training/*
