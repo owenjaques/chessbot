@@ -70,7 +70,7 @@ import time
 import os
 import pickle
 
-from .board_processing import Boardprocessing
+from search_tree.functions.board_processing import Boardprocessing
 
 
 # class Node is a node in the search tree
@@ -237,7 +237,7 @@ class Search:
         self.wins = 0
         self.losses = 0
         self.draws = 0
-        self.model = pickle.load(open('move_models/move_prediction_logreg_V1.pkl', 'rb'))
+        self.model = pickle.load(open('search_tree/move_models/move_prediction_logreg_V1.pkl', 'rb'))
         self.root = Node(None, chessboard, None, self.model)
 
     # search for best move

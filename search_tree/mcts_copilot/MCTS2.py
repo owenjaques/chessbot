@@ -81,7 +81,7 @@ import time
 import os
 import pickle
 
-from .board_processing import Boardprocessing
+from search_tree.functions.board_processing import Boardprocessing
 
 class Node:
     def __init__(self, parent, board, move, move_prediction_models=None, move_model_input=None, board_prediction_models=None, board_model_input=None):
@@ -224,16 +224,16 @@ class Search:
         board_prediction_models_list = []
         board_prediction_input_list = []
 
-        for filename in os.listdir('move_models'):
-            with open('move_models//'+ filename, 'rb') as f:
+        for filename in os.listdir('search_tree/move_models'):
+            with open('search_tree/move_models//'+ filename, 'rb') as f:
                 move_prediction_models_list.append(pickle.load(f))
                 if "V1" in filename:
                     move_prediction_input_list.append(1)
                 elif "V2" in filename:
                     move_prediction_input_list.append(2)
     
-        for filename in os.listdir('board_models'):
-            with open('board_models//'+ filename, 'rb') as f:
+        for filename in os.listdir('search_tree/board_models'):
+            with open('search_tree/board_models//'+ filename, 'rb') as f:
                 board_prediction_models_list.append(pickle.load(f))
                 if "V1" in filename:
                     board_prediction_input_list.append("V1")
@@ -276,7 +276,11 @@ class Search:
                     self.nodes_lost += 1
             node.backpropagate(result)
             self.nodes_backpropagated += 1
-        return max(self.root.children, key=lambda node: node.visits).move
+        try :
+            move = max(self.root.children, key=lambda node: node.visits).move
+        except:
+            move = None
+        return move
 
     def select(self, node):
         if node is None:
