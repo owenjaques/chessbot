@@ -1,3 +1,8 @@
+env
+__pycache__
+*.pgn*
+
+
 *.ipynb_checkpoints/
 *.DS_Store
 *.pyc
