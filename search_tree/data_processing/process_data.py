@@ -578,14 +578,3 @@ class ChessMove:
 # this file is only for processing the data
 
 """
-
-
-
-
-
-
-
-
-
-
-

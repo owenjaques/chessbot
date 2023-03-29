@@ -108,5 +108,3 @@ def play_game():
 
 if __name__ == "__main__":
     print(play_game())
-
-

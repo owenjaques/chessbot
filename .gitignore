@@ -3,4 +3,5 @@ __pycache__
 *.pgn*
 *.pkl*
 *.csv*
+*.vscode*
 */stockfish_15.1_win_x64_avx2/*

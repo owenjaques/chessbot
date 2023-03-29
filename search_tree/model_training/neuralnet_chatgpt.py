@@ -5,7 +5,7 @@ import chess.engine
 from keras.models import Sequential
 from keras.layers import Dense, Flatten, Conv2D, MaxPooling2D, BatchNormalization, Dropout
 
-def model_cnn2(data, labels, model_name):
+def model_cnn1(data, labels, model_name):
     # Define the input shape
     # 8x8 chess board with 8 channels (6 pieces + 2 for current player and opponent)
     input_shape = (8, 8, 8)

@@ -108,4 +108,3 @@ if __name__ == '__main__':
     board = encdec.encode_board(board_fen)
     print(board)
     print(encdec.decode_board(board))
-
