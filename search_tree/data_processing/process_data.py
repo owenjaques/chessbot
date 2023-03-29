@@ -41,7 +41,7 @@ class ProcessData:
         # the 65th element will be the value of the position
         # the 66th element will be the value of the best move
         # doesn't need more than five, because the best move is always the first move
-        path = os.path.join('stockfish_15.1_linux_x64_bmi2', 'stockfish_15.1_x64_bmi2')
+        path = os.path.join('stockfish_15.1_win_x64_avx2',  'stockfish-windows-2022-x86-64-avx2.exe')
         stockfish = Stockfish(path)
 
         # create a new data frame
@@ -57,6 +57,8 @@ class ProcessData:
             chess_board = chess.Board(fen)
 
             # set stockfish to the position
+            board = chess.Board(fen)
+
             stockfish.set_fen_position(fen)
 
             # get a string containing the sequence of moves
@@ -88,7 +90,7 @@ class ProcessData:
             # add the 1-hot vector of the stockfish move to the data frame
             new_data_list.append((board, value, best_move_rating, best_lichess_move_vector, best_stockfish_move_vector))
 
-            if each % 10000 == 0:
+            if each % 30000 == 0:
                 new_data = pd.DataFrame(new_data_list, columns=['board', 'value', 'best_move_rating', 'best_lichess_move_vector', 'best_stockfish_move_vector'])
                 time_end = time.time()
                 print('time taken: ', time_end - time_start)
@@ -311,7 +313,7 @@ class ProcessData:
 
         return best_move_vector
     
-
+"""
 class ChessBoard:
     def __init__(self, board):
         # initialize the chess board
@@ -538,7 +540,7 @@ class ChessMove:
         move = chess.Move(from_square, to_square, promotion, capture, check, checkmate)
 
         return move
-    
+
     def get_square_from_square_vector(self, square_vector):
         # get the square from the 1-hot vector of the square
         # the 1-hot vector of the square will be in the format of [file, rank]
@@ -575,7 +577,7 @@ class ChessMove:
 
 # this file is only for processing the data
 
-
+"""
 
 
 
