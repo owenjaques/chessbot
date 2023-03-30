@@ -2,3 +2,4 @@ env
 __pycache__
 *.pgn*
 neural_networks/bin
+neural_networks/chessbot_weights
