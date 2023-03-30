@@ -4,3 +4,10 @@ __pycache__
 *.csv*
 *.vscode*
 */stockfish_15.1_win_x64_avx2/*
+search_tree/data_processing/data_processed/chess_puzzles - Copy.pkl
+search_tree/data_processing/data_processed/chess_puzzles - Copy (2).pkl
+search_tree/data_processing/data_processed/chess_puzzles.pkl
+search_tree/model_training/data/chess_puzzles - Copy.pkl
+search_tree/model_training/data/chess_puzzles.pkl
+search_tree/bad/pruning_experiments/saved_model/6percentbestmovelogreg.pkl
+search_tree/bad/pruning_experiments/saved_model/logreg500iter.pkl
