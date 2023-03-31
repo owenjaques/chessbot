@@ -1,4 +1,8 @@
-env
-__pycache__
+env/
+__pycache__/
 *.pgn*
-neural_networks/bin
+neural_networks/bin/
+pre_processing/data/matrix_input_model/
+pre_processing/data/single_input_model/
+pre_processing/data/triple_input_model/
+pre_processing/data/simple_input_model/
