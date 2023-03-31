@@ -1,3 +1,9 @@
+"""
+to-do:
+accuracy function is likely wrong
+"""
+
+
 import torch
 from torch.utils.data import DataLoader, Dataset
 import torch.nn.functional as F
@@ -69,6 +75,7 @@ class ConvNetHyperparamSearch:
             val_loader = DataLoader(
                 val_dataset, batch_size=batch_size, shuffle=False)
 
+            running_acc = 0.0
             # Train the model for the specified number of epochs
             for epoch in range(num_epochs):
                 model.train()
@@ -93,33 +100,51 @@ class ConvNetHyperparamSearch:
                                 self.device), labels.to(self.device)
                             outputs = model(inputs)
                             _, predictions = torch.max(outputs, 1)
-                            total_correct += torch.sum(predictions == labels)
+                            int_labels = torch.round(labels * 10).type(torch.LongTensor)
+                            int_preds = torch.round(predictions.float() / 10).type(torch.LongTensor)
+                            # compute accuracy
+                            running_acc += torch.sum(int_preds == int_labels)
 
                     accuracy = total_correct.item() / len(val_dataset)
                     print(
                         f'Epoch {epoch+1}/{num_epochs}, Accuracy: {accuracy*100:.2f}%')
                 except:
                     continue
+            try:
+                accuracy = running_acc
             # Check if the model's accuracy is the best so far
-            if accuracy > best_accuracy:
-                best_accuracy = accuracy
-                best_hyperparams = {
-                    'channel1': channel1, 
-                    'channel2': channel2,
-                    'channel3': channel3,
-                    'kernel_size1': kernel_size1,
-                    'kernel_size2': kernel_size2,
-                    'kernel_size3': kernel_size3,
-                    'padding1': padding1,
-                    'padding2': padding2,
-                    'padding3': padding3,
-                    'dilation1': dilation1,
-                    'dilation2': dilation2,
-                    'dilation3': dilation3
-                }
+                if accuracy and accuracy > best_accuracy:
+                    best_accuracy = accuracy
+                    best_hyperparams = {
+                        'channel1': channel1, 
+                        'channel2': channel2,
+                        'channel3': channel3,
+                        'kernel_size1': kernel_size1,
+                        'kernel_size2': kernel_size2,
+                        'kernel_size3': kernel_size3,
+                        'padding1': padding1,
+                        'padding2': padding2,
+                        'padding3': padding3,
+                        'dilation1': dilation1,
+                        'dilation2': dilation2,
+                        'dilation3': dilation3
+                    }
+            except:
+                continue
 
         print(f'Best accuracy: {best_accuracy*100:.2f}%')
         print(f'Best hyperparameters: {best_hyperparams}')
+
+        self.best_hyperparams = best_hyperparams
+        self.best_accuracy = best_accuracy
+
+        return best_hyperparams
+
+    def get_best_hyperparams(self):
+        return self.best_hyperparams
+    
+    def get_best_accuracy(self):
+        return self.best_accuracy
 
 
 class ChessDataset(Dataset):
