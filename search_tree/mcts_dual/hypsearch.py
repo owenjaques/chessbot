@@ -22,7 +22,7 @@ class ConvNetHyperparamSearch:
 
     def search(self, num_epochs=10, batch_size=64, learning_rate=0.001):
         # Define a range of hyperparameters to search over
-        channels = [16, 32, 64]
+        channels = [16, 32, 64, 128]
         kernel_sizes = [3, 5]
         paddings = [1, 2]
         dilations = [1, 2]
@@ -51,9 +51,9 @@ class ConvNetHyperparamSearch:
                           padding=padding3, dilation=dilation3),
                 nn.ReLU(),
                 nn.Flatten(),
-                nn.Linear(channel3 * 6 * 6, 256),
+                nn.Linear(channel3 * 8 * 8, 64),
                 nn.ReLU(),
-                nn.Linear(256, self.num_classes)
+                nn.Linear(64, self.num_classes)
             )
 
             # Move the model to the specified device
@@ -75,8 +75,8 @@ class ConvNetHyperparamSearch:
             val_loader = DataLoader(
                 val_dataset, batch_size=batch_size, shuffle=False)
 
-            running_acc = 0.0
             # Train the model for the specified number of epochs
+            accuracy = 0
             for epoch in range(num_epochs):
                 model.train()
                 for inputs, labels in train_loader:
@@ -100,20 +100,16 @@ class ConvNetHyperparamSearch:
                                 self.device), labels.to(self.device)
                             outputs = model(inputs)
                             _, predictions = torch.max(outputs, 1)
-                            int_labels = torch.round(labels * 10).type(torch.LongTensor)
-                            int_preds = torch.round(predictions.float() / 10).type(torch.LongTensor)
-                            # compute accuracy
-                            running_acc += torch.sum(int_preds == int_labels)
+                            total_correct += torch.sum( (labels-0.25 ) < predictions < (labels+0.25) )
 
-                    accuracy = total_correct.item() / len(val_dataset)
+                    accuracy = total_correct / len(val_dataset)
                     print(
                         f'Epoch {epoch+1}/{num_epochs}, Accuracy: {accuracy*100:.2f}%')
                 except:
                     continue
             try:
-                accuracy = running_acc
             # Check if the model's accuracy is the best so far
-                if accuracy and accuracy > best_accuracy:
+                if accuracy > best_accuracy:
                     best_accuracy = accuracy
                     best_hyperparams = {
                         'channel1': channel1, 
