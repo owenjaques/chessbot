@@ -4,8 +4,8 @@ import numpy as np
 
 class Boardprocessing:
 
-    def __init__(self, boards, board_style="V1"):
-        self.board = boards
+    def __init__(self, board, board_style="V1"):
+        self.board = chess.Board(board)
         self.board_image = [0]*64
         self.board_style = board_style
         self.update_board()
@@ -88,10 +88,12 @@ class Boardprocessing:
                 elif each == 'K':
                     self.board_image[count] = 37
                 elif each.isdigit():
-                    count -= 1
-                    for x in range(0, int(each)):
+                    for x in range(0, int(each)-1):
                         count += 1
-                count += 1
+                if each != "/":
+                    count += 1
+                    if count > 63:
+                        break
         else:
             for each in fen_split:
                 if each == 'p':
@@ -119,10 +121,12 @@ class Boardprocessing:
                 elif each == 'K':
                     self.board_image[count] = 13
                 elif each.isdigit():
-                    count -= 1
-                    for x in range(0, int(each)):
+                    for x in range(0, int(each)-1):
                         count += 1
-                count += 1
+                if each != "/":
+                    count += 1
+                    if count > 63:
+                        break
 
 
     def get_board_image(self):

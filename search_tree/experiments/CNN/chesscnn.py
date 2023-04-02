@@ -132,3 +132,4 @@ class ChessCNN(nn.Module):
         x = nn.functional.sigmoid(x)
 
         return x.squeeze()
+    
