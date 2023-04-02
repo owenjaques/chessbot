@@ -1,11 +1,12 @@
 env
 __pycache__
 *.pgn*
-
-
 *.ipynb_checkpoints/
 *.DS_Store
 *.pyc
 *.pgn
 *.sav
 *.zip
+=======
+neural_networks/bin
+neural_networks/chessbot_weights
