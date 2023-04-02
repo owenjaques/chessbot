@@ -6,6 +6,10 @@
 # https://joshvarty.github.io/AlphaZero/
 # https://stackoverflow.com/questions/54027861/using-queue-priorityqueue-not-caring-about-comparisons
 
+
+# to-do: heapq is not a great idea here...
+
+
 import chess
 import random
 import math
@@ -20,9 +24,8 @@ import heapq
 
 from collections import defaultdict
 
-
 class MCTS():
-    def __init__(self, board, time_limit,num_simulations, max_depth=100, policy_nn=None, value_nn=None):
+    def __init__(self, board, time_limit,num_simulations, max_depth=100, policy_nn=None, value_nn=None, heap_mark=False):
         self.board = board
         self.turn_marker = -1 if board.turn else 1
         self.time_limit = time_limit
@@ -30,6 +33,7 @@ class MCTS():
         self.max_depth = max_depth
         self.policy = policy_nn
         self.value = value_nn
+        self.heap_mark = heap_mark
         self.nodes = {}
         self.root = self.board.fen()
         self.heap = []
@@ -40,26 +44,26 @@ class MCTS():
         self.nodes[self.root].set_parent(None)
         self.nodes[self.root].set_action(None)
         self.nodes[self.root].set_depth(0)
-        self.leaf_heapq = []
-        heapq.heapify(self.leaf_heapq)
+        if self.heap_mark:
+            self.leaf_heapq = []
+            heapq.heapify(self.leaf_heapq)
         self.nodes[self.root].children = self.expand( self.board.fen() )
         
     
-
     def search(self):
         start_time = time.time()
-        # setup workers that will run simulations in parallel for a certain amount of time
-        # workers will work on a queue of nodes to simulate and update the dictionary of nodes
 
         self.expand(self.root)
 
         # while the time limit has not been reached
         while time.time() - start_time < self.time_limit:
             # get the next node to simulate
-            node = heapq.heappop(self.leaf_heapq).board.fen()
-
-            if self.nodes[node].terminal:
-                continue
+            if self.heap_mark:
+                node = heapq.heappop(self.heap).board.fen()
+            else:
+                node = self.root
+                while not self.nodes[node].terminal:
+                    node = self.select(node)
 
             # expand the node
             self.expand(node)
@@ -69,14 +73,29 @@ class MCTS():
 
         # return the best move
         return self.best_move()
+    
 
+    def select(self, node):
+        # select the best child of the node
+        best_child = None
+        best_value = -1
 
+        for child in self.nodes[node].children:
+            child_value = self.nodes[child].value / self.nodes[child].visits + math.sqrt(2 * math.log(self.nodes[node].visits) / self.nodes[child].visits)
+            if child_value > best_value:
+                best_value = child_value
+                best_child = child
+
+        return best_child
+    
     def expand(self, node):
         # expand the node and add the children to the heap
         board_start = chess.Board(self.nodes[node].board.fen())
 
-        if self.nodes[node].terminal:
-            return
+        turn_marker = 1 if board_start.turn else 1
+
+        turn_marker = turn_marker*self.turn_marker
+
         if board_start != None:
             # to do: add a policy network to evaluate the board
             legal_moves = list(board_start.legal_moves)
@@ -89,10 +108,13 @@ class MCTS():
                 child.set_parent(self.nodes[node].board.fen())
                 child.set_action(move)
                 child.set_depth(self.nodes[node].depth + 1)
-                child.add_value(self.evaluate(child.board)*self.turn_marker)
+                child.add_value(self.evaluate(child.board)*turn_marker)
                 self.nodes[node].add_child(child.board.fen())
-                self.nodes[child.board.fen()] = child      
-                heapq.heappush(self.leaf_heapq, child)
+                self.nodes[child.board.fen()] = child   
+
+                self.nodes[node].terminal = False
+                if self.heap_mark:
+                    heapq.heappush(self.leaf_heapq, child)
 
         else:
             print("Error: node has no board")
@@ -233,7 +255,7 @@ class Node():
         self.action = None
         self.player = None
         self.depth = 0
-        self.terminal = False
+        self.terminal = True
 
     def set_board(self, board):
         self.board = chess.Board(board)
