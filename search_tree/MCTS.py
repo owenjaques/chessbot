@@ -25,9 +25,9 @@ import heapq
 from collections import defaultdict
 
 class MCTS():
-    def __init__(self, board, time_limit,num_simulations, max_depth=100, policy_nn=None, value_nn=None, heap_mark=False):
-        self.board = board
-        self.turn_marker = -1 if board.turn else 1
+    def __init__(self, time_limit, num_simulations, player='white', max_depth=100, policy_nn=None, value_nn=None, heap_mark=False):
+        self.board = chess.Board()
+        self.player = player
         self.time_limit = time_limit
         self.num_simulations = num_simulations
         self.max_depth = max_depth
@@ -35,8 +35,9 @@ class MCTS():
         self.value = value_nn
         self.heap_mark = heap_mark
         self.nodes = {}
-        self.root = self.board.fen()
-        self.heap = []
+
+    def set_root(self, board):
+        self.root = board.fen()
         self.nodes[self.root] = Node()
         self.nodes[self.root].set_board(self.root)
         self.nodes[self.root].set_visits(1)
@@ -45,15 +46,18 @@ class MCTS():
         self.nodes[self.root].set_action(None)
         self.nodes[self.root].set_depth(0)
         if self.heap_mark:
-            self.leaf_heapq = []
+            self.leaf_heapq = [self.nodes[self.root]]
             heapq.heapify(self.leaf_heapq)
-        self.nodes[self.root].children = self.expand( self.board.fen() )
+        if self.root not in self.nodes:
+            self.expand( self.board.fen() )
         
-    
-    def search(self):
+    def search(self, board):
         start_time = time.time()
 
-        self.expand(self.root)
+        # set the root node
+        self.set_root(board)
+
+        node = self.nodes[self.root]
 
         # while the time limit has not been reached
         while time.time() - start_time < self.time_limit:
@@ -66,16 +70,15 @@ class MCTS():
                     node = self.select(node)
                     if node == None:
                         break
-                        
-            
-            #self.nodes[node].value += self.evaluate(chess.Board(self.nodes[node].board))
 
             if node != None:
                 # expand the node
                 self.expand(node)
 
+                value = sum(self.nodes[child].value for child in self.nodes[node].children)
+
                 # backpropagate the value
-                self.backpropagate(node)
+                self.backpropagate(node, value)
 
         # return the best move
         return self.best_move()
@@ -87,15 +90,11 @@ class MCTS():
         best_value = math.inf
 
         for child in self.nodes[node].children:
-            if self.nodes[child].visits == 0:
-                self.nodes[child].visits = 1
-                child_value = 0
-            else:
-                try:
-                    child_value = self.nodes[child].value / self.nodes[child].visits + math.sqrt(2 * math.log(self.nodes[node].visits) / self.nodes[child].visits)
-                except:
-                    child_value = self.evaluate(chess.Board(self.nodes[child].board))
-                    continue
+            try:
+                child_value = self.nodes[child].value / self.nodes[child].visits + math.sqrt(2 * math.log(self.nodes[node].visits) / self.nodes[child].visits)
+            except:
+                child_value = self.evaluate(chess.Board(self.nodes[child].board))
+                continue
             if child_value < best_value:
                 best_value = child_value
                 best_child = child
@@ -123,7 +122,6 @@ class MCTS():
                 child.add_value(self.evaluate(child.board))
                 self.nodes[node].add_child(child.board.fen())
                 self.nodes[child.board.fen()] = child   
-
                 self.nodes[node].terminal = False
                 if self.heap_mark:
                     heapq.heappush(self.leaf_heapq, child)
@@ -135,10 +133,8 @@ class MCTS():
     def evaluate(self, board):
         # evaluate the board
         if board.is_game_over():
-            if board.result() == "1-0":
-                return 1*self.turn_marker
-            elif board.result() == "0-1":
-                return -1*self.turn_marker
+            if board.result() == "1-0" or board.result() == "0-1":
+                return -1
             else:
                 return 0
         else:
@@ -146,10 +142,7 @@ class MCTS():
     
     def heuristic(self, board):
         if board.is_checkmate():
-            if board.turn:
-                return 1*self.turn_marker
-            else:
-                return -1*self.turn_marker
+            return -1
         if board.is_stalemate():
             return 0
         if board.is_insufficient_material():
@@ -158,7 +151,7 @@ class MCTS():
             return 0
         if board.can_claim_threefold_repetition():
             return 0
-        if self.value == None:
+        if self.value == 0:
             return self.rollout(board)
         # not sure if this is the best way to do this
         # try with just value and evaluate_material, evaluate_position
@@ -199,43 +192,45 @@ class MCTS():
     def rollout(self, board):
         # play out random moves until the game is over
         value = 0
+        turn = -1
+        if board.turn:
+            turn = 1
         for _ in range(self.num_simulations):
             sim_board = chess.Board(board.fen())
-            for i in range(200):
+            for i in range(self.max_depth):
                 legal_moves = list(sim_board.legal_moves)
                 if len(legal_moves) == 0:
                     break
                 move = random.choice(legal_moves)
                 sim_board.push(move)
-            value += self.get_board_value(sim_board)
+            value += self.get_board_value(sim_board)*turn
         return value
 
     def get_board_value(self, board):
-
         if board.result() == "1-0":
-            return 1*self.turn_marker
+            return 1
         elif board.result() == "0-1":
-            return -1*self.turn_marker
+            return -1
         elif board.is_checkmate():
             if board.turn:
-                return 1*self.turn_marker
+                return 1
             else:
-                return -1*self.turn_marker
+                return -1
         else:
             board_sum = self.evaluate_material(board) + self.evaluate_position(board)
             if board_sum > 0:
-                return 0.3*self.turn_marker
+                return 0.3
             elif board_sum < 0:
-                return -0.3*self.turn_marker
+                return -0.3
             else:
                 return 0
         
-    def backpropagate(self, node):
-        if self.nodes[node].parent == None:
-            return
+    def backpropagate(self, node, value):
+        # backpropagate the value of the board
         self.nodes[node].visits += 1
-        self.nodes[node].value += self.nodes[node].value / self.nodes[node].visits
-        self.backpropagate(self.nodes[node].parent)
+        self.nodes[node].value += value / self.nodes[node].visits+1
+
+        self.backpropagate(self.nodes[node].parent, value)
 
     def predict(self, board):
         # use a neural network to predict the value of the board
@@ -324,17 +319,8 @@ class Node():
         
 
 
-
-# test codde
-
-def test():
-    board = chess.Board()
-    mcts = MCTS(board, time_limit=10, num_simulations=10)
-    mcts.search()
-    print(mcts.best_move())
-
-
-# main 
+def main():
+    pass
 
 if __name__ == "__main__":
-    test()
+    main()
