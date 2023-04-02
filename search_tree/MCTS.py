@@ -38,18 +38,25 @@ class MCTS():
 
     def set_root(self, board):
         self.root = board.fen()
-        self.nodes[self.root] = Node()
-        self.nodes[self.root].set_board(self.root)
-        self.nodes[self.root].set_visits(1)
-        self.nodes[self.root].set_value(0)
-        self.nodes[self.root].set_parent(None)
-        self.nodes[self.root].set_action(None)
-        self.nodes[self.root].set_depth(0)
-        if self.heap_mark:
-            self.leaf_heapq = [self.nodes[self.root]]
-            heapq.heapify(self.leaf_heapq)
         if self.root not in self.nodes:
-            self.expand( self.board.fen() )
+            self.nodes[self.root] = Node()
+            self.nodes[self.root].set_board(self.root)
+            self.nodes[self.root].add_visit(0)
+            self.nodes[self.root].set_value(0)
+            self.nodes[self.root].set_parent(None)
+            self.nodes[self.root].set_action(None)
+            self.nodes[self.root].set_depth(0)
+            if self.heap_mark:
+                self.leaf_heapq = []
+                heapq.heapify(self.leaf_heapq)
+            self.expand( self.root )
+        else:
+            self.nodes[self.root].parent = None
+            # this isn't great yet... resets the heap every time
+            # not sure how to efficiently update the heap yet as need to remove all nodes not connected to new root
+            if self.heap_mark:
+                self.leaf_heapq = [self.nodes[self.root]]
+                heapq.heapify(self.leaf_heapq)
         
     def search(self, board):
         start_time = time.time()
@@ -75,10 +82,11 @@ class MCTS():
                 # expand the node
                 self.expand(node)
 
-                value = sum(self.nodes[child].value for child in self.nodes[node].children)
+                self.nodes[node].value += sum(self.nodes[child].value for child in self.nodes[node].children)
 
                 # backpropagate the value
-                self.backpropagate(node, value)
+                if self.nodes[node].parent != None:
+                    self.backpropagate(self.nodes[node].parent, self.nodes[node].value)
 
         # return the best move
         return self.best_move()
@@ -86,20 +94,18 @@ class MCTS():
 
     def select(self, node):
         # select the best child of the node
-        best_child = None
-        best_value = math.inf
+        # if the node has no children, return None
+        if len(self.nodes[node].children) == 0:
+            return None
+        else:
+            min_value = math.inf
+            best_child = None
+            for child in self.nodes[node].children:
+                if self.nodes[child].value < min_value:
+                    min_value = self.nodes[child].value
+                    best_child = child
+            return best_child
 
-        for child in self.nodes[node].children:
-            try:
-                child_value = self.nodes[child].value / self.nodes[child].visits + math.sqrt(2 * math.log(self.nodes[node].visits) / self.nodes[child].visits)
-            except:
-                child_value = self.evaluate(chess.Board(self.nodes[child].board))
-                continue
-            if child_value < best_value:
-                best_value = child_value
-                best_child = child
-
-        return best_child
     
     def expand(self, node):
         # expand the node and add the children to the heap
@@ -117,6 +123,7 @@ class MCTS():
                 board.push(move)
                 child.set_board(board.fen())
                 child.set_parent(self.nodes[node].board.fen())
+                child.add_visit(1)
                 child.set_action(move)
                 child.set_depth(self.nodes[node].depth + 1)
                 child.add_value(self.evaluate(child.board))
@@ -151,7 +158,7 @@ class MCTS():
             return 0
         if board.can_claim_threefold_repetition():
             return 0
-        if self.value == 0:
+        if self.value == None:
             return self.rollout(board)
         # not sure if this is the best way to do this
         # try with just value and evaluate_material, evaluate_position
@@ -227,10 +234,10 @@ class MCTS():
         
     def backpropagate(self, node, value):
         # backpropagate the value of the board
-        self.nodes[node].visits += 1
-        self.nodes[node].value += value / self.nodes[node].visits+1
-        if self.nodes[node].parent != None:
-            self.backpropagate(self.nodes[node].parent, value)
+        if self.nodes[node] == None:
+            return
+        self.nodes[node].add_value(-value)
+        self.nodes[node].add_visit(1)
 
     def predict(self, board):
         # use a neural network to predict the value of the board
@@ -274,8 +281,8 @@ class Node():
         
         #todo: set self.terminal to true if the game is over
 
-    def set_visits(self, visits):
-        self.visits = visits
+    def add_visit(self, visits):
+        self.visits += visits
 
     def set_value(self, value):
         self.value = value
