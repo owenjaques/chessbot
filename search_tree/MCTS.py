@@ -229,8 +229,8 @@ class MCTS():
         # backpropagate the value of the board
         self.nodes[node].visits += 1
         self.nodes[node].value += value / self.nodes[node].visits+1
-
-        self.backpropagate(self.nodes[node].parent, value)
+        if self.nodes[node].parent != None:
+            self.backpropagate(self.nodes[node].parent, value)
 
     def predict(self, board):
         # use a neural network to predict the value of the board
