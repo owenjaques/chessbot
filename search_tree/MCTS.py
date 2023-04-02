@@ -24,6 +24,7 @@ from collections import defaultdict
 class MCTS():
     def __init__(self, board, time_limit,num_simulations, max_depth=100, policy_nn=None, value_nn=None):
         self.board = board
+        self.turn_marker = -1 if board.turn else 1
         self.time_limit = time_limit
         self.num_simulations = num_simulations
         self.max_depth = max_depth
@@ -73,6 +74,7 @@ class MCTS():
     def expand(self, node):
         # expand the node and add the children to the heap
         board_start = chess.Board(self.nodes[node].board.fen())
+
         if self.nodes[node].terminal:
             return
         if board_start != None:
@@ -87,7 +89,7 @@ class MCTS():
                 child.set_parent(self.nodes[node].board.fen())
                 child.set_action(move)
                 child.set_depth(self.nodes[node].depth + 1)
-                child.set_value(self.evaluate(child.board))
+                child.add_value(self.evaluate(child.board)*self.turn_marker)
                 self.nodes[node].add_child(child.board.fen())
                 self.nodes[child.board.fen()] = child      
                 heapq.heappush(self.leaf_heapq, child)
@@ -175,21 +177,22 @@ class MCTS():
         return value
 
     def get_board_value(self, board):
+        turn_mark = 1 if board.turn else -1
         if board.result() == "1-0":
-            return 1
+            return 1*turn_mark
         elif board.result() == "0-1":
-            return -1
+            return -1*turn_mark
         elif board.is_checkmate():
             if board.turn:
-                return 1
+                return 1*turn_mark
             else:
-                return -1
+                return -1*turn_mark
         else:
             board_sum = self.evaluate_material(board) + self.evaluate_position(board)
             if board_sum > 0:
-                return 0.3
+                return 0.3*turn_mark
             elif board_sum < 0:
-                return -0.3
+                return -0.3*turn_mark
             else:
                 return 0
         
@@ -247,6 +250,9 @@ class Node():
 
     def set_value(self, value):
         self.value = value
+
+    def add_value(self, value):
+        self.value += value
 
     def add_child(self, child):
         if self.children == None:
