@@ -25,7 +25,7 @@ import heapq
 from collections import defaultdict
 
 class MCTS():
-    def __init__(self, time_limit, num_simulations, player='white', max_depth=100, policy_nn=None, value_nn=None, heap_mark=False):
+    def __init__(self, time_limit=10, num_simulations=100, player='white', max_depth=100, policy_nn=None, value_nn=None, use_heap=False):
         self.board = chess.Board()
         self.player = player
         self.time_limit = time_limit
@@ -33,8 +33,14 @@ class MCTS():
         self.max_depth = max_depth
         self.policy = policy_nn
         self.value = value_nn
-        self.heap_mark = heap_mark
+        self.heap_mark = use_heap
         self.nodes = {}
+        self.best_move_value = 0
+
+    def get_best_move_value(self, board):
+        # get the best move after the last search and return the value of the node
+        move = self.search(board)
+        return self.best_move_value, move
 
     def set_root(self, board):
         self.root = board.fen()
@@ -252,7 +258,7 @@ class MCTS():
             if self.nodes[child].value < best_value:
                 best_move = self.nodes[child].action
                 best_value = self.nodes[child].value
-
+        self.best_move_value = best_value
         return best_move
     
 
