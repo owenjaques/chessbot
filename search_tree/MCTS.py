@@ -66,7 +66,10 @@ class MCTS():
                     node = self.select(node)
                     if node == None:
                         break
-        
+                        
+            
+            #self.nodes[node].value += self.evaluate(chess.Board(self.nodes[node].board))
+
             if node != None:
                 # expand the node
                 self.expand(node)
@@ -107,6 +110,8 @@ class MCTS():
             # to do: add a policy network to evaluate the board
             legal_moves = list(board_start.legal_moves)
 
+            # currently.... is supposed to only expand one but I like the idea of expanding all
+            # doesnt work well though. Is a stop gap measure until we have a policy network
             for move in legal_moves:
                 child = Node()
                 board = chess.Board(board_start.fen())
