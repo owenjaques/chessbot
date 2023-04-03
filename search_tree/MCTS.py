@@ -5,9 +5,7 @@
 
 # https://joshvarty.github.io/AlphaZero/
 # https://stackoverflow.com/questions/54027861/using-queue-priorityqueue-not-caring-about-comparisons
-
-
-# to-do: heapq is not a great idea here...
+# https://web.stanford.edu/~surag/posts/alphazero.html
 
 
 import chess
@@ -16,19 +14,23 @@ import math
 import time
 import numpy as np
 import copy
-import sys
 import os
 import pickle
 import queue
 import heapq
+import sys 
+sys.path.append('..')
 
 from collections import defaultdict
 
+from neural_networks.chessbot.modelinput import ModelInput
+from neural_networks.chessbot.chessbot import ChessBot
+
 class MCTS():
-    def __init__(self, time_limit=10, num_simulations=100, player='white', max_depth=100, policy_nn=None, value_nn=None, use_heap=False):
+    def __init__(self, max_time=10, num_simulations=350, player='white', max_depth=50, policy_nn=None, value_nn=None, use_heap=False, model_input=None):
         self.board = chess.Board()
         self.player = player
-        self.time_limit = time_limit
+        self.time_limit = max_time
         self.num_simulations = num_simulations
         self.max_depth = max_depth
         self.policy = policy_nn
@@ -36,6 +38,7 @@ class MCTS():
         self.heap_mark = use_heap
         self.nodes = {}
         self.best_move_value = 0
+        self.model_input = model_input
 
     def get_best_move_value(self, board):
         # get the best move after the last search and return the value of the node
@@ -75,7 +78,7 @@ class MCTS():
         # while the time limit has not been reached
         while time.time() - start_time < self.time_limit:
             # get the next node to simulate
-            if self.heap_mark:
+            if self.heap_mark and len(self.leaf_heapq) > 0:
                 node = heapq.heappop(self.leaf_heapq).board.fen()
             else:
                 node = self.root
@@ -88,11 +91,9 @@ class MCTS():
                 # expand the node
                 self.expand(node)
 
-                self.nodes[node].value += sum(self.nodes[child].value for child in self.nodes[node].children)
+                value = sum(self.nodes[child].value for child in self.nodes[node].children)
 
-                # backpropagate the value
-                if self.nodes[node].parent != None:
-                    self.backpropagate(self.nodes[node].parent, self.nodes[node].value)
+                self.backpropagate(node, value)
 
         # return the best move
         return self.best_move()
@@ -107,7 +108,8 @@ class MCTS():
             min_value = math.inf
             best_child = None
             for child in self.nodes[node].children:
-                if self.nodes[child].value < min_value:
+                child_value = self.nodes[child].value / self.nodes[child].visits - math.sqrt(2 * math.log(self.nodes[node].visits) / (self.nodes[child].visits+1))
+                if child_value < min_value:
                     min_value = self.nodes[child].value
                     best_child = child
             return best_child
@@ -133,6 +135,9 @@ class MCTS():
                 child.set_action(move)
                 child.set_depth(self.nodes[node].depth + 1)
                 child.add_value(self.evaluate(child.board))
+                child.set_terminal(True)
+                if child.value < -0.9:
+                    child.value = self.rollout(child.board)
                 self.nodes[node].add_child(child.board.fen())
                 self.nodes[child.board.fen()] = child   
                 self.nodes[node].terminal = False
@@ -168,7 +173,7 @@ class MCTS():
             return self.rollout(board)
         # not sure if this is the best way to do this
         # try with just value and evaluate_material, evaluate_position
-        return self.predict(board) 
+        return self.predict(board)
     
     def evaluate_material(self, board):
         material = 0
@@ -215,9 +220,23 @@ class MCTS():
                 if len(legal_moves) == 0:
                     break
                 move = random.choice(legal_moves)
+                if self.policy != None:
+                    while self.rollout_policy(move, sim_board) > 0 and len(legal_moves) > 0:
+                        move = random.choice(legal_moves)
                 sim_board.push(move)
             value += self.get_board_value(sim_board)*turn
         return value
+    
+    def rollout2(self, board):
+        # play out random moves until the game is over
+        value = 0
+        turn = -1
+        if board.turn:
+            turn = 1
+        sim_board = chess.Board(board.fen())
+        value += self.get_board_value(sim_board)*turn
+        return value
+
 
     def get_board_value(self, board):
         if board.result() == "1-0":
@@ -233,23 +252,38 @@ class MCTS():
             # probably better to return a value scaled by the depth and board_sum
             board_sum = self.evaluate_material(board) + self.evaluate_position(board)
             if board_sum > 0:
-                return 0.3
+                return 0.1
             elif board_sum < 0:
-                return -0.3
+                return 0.1
             else:
                 return 0
+            return board_sum
         
     def backpropagate(self, node, value):
         # backpropagate the value of the board
-        if self.nodes[node] == None:
+        if node == None or self.nodes[node] == None:
             return
-        self.nodes[node].add_value(-value)
+        self.nodes[node].value = (self.nodes[node].value*self.nodes[node].visits + value)/(self.nodes[node].visits + 1)
         self.nodes[node].add_visit(1)
+        if self.nodes[node].parent != None:
+            self.backpropagate(self.nodes[node].parent, -value)
+        
+    # since we don't have a neural network, we can't use the policy network so we'll just use the rollout policy with this..
+    def rollout_policy(self, move, board):
+        if self.policy == None or self.model_input == None:
+            return 0
+        board = chess.Board(board.fen()).push(move)
+        value = -(self.policy.predict(np.array([self.model_input.get_input(board)]), verbose=0)[0]*2 - 1)
+        return value
+
 
     def predict(self, board):
         # use a neural network to predict the value of the board
         # for now, just return 0
-        return 0
+        if self.value == None or self.model_input == None:
+            return 0
+        value = -(self.value.predict(np.array([self.model_input.get_input(board)]), verbose=0)[0]*2 - 1)
+        return value
     
     def best_move(self):
         # find the best move
