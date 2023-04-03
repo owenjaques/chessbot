@@ -230,6 +230,7 @@ class MCTS():
             else:
                 return -1
         else:
+            # probably better to return a value scaled by the depth and board_sum
             board_sum = self.evaluate_material(board) + self.evaluate_position(board)
             if board_sum > 0:
                 return 0.3
