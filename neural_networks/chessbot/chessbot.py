@@ -1,7 +1,7 @@
 import random
 import numpy as np
 import chess
-from .model_input import ModelInput
+from .modelinput import ModelInput
 
 class ChessBot:
     def __init__(self, model, color, exploration_rate=0.0):
@@ -25,7 +25,7 @@ class ChessBot:
 
     def convert_move_to_model_input(self, board, move):
         board.push(move)
-        model_input = ModelInput(board).get_input()
+        model_input = ModelInput().get_input(board)
         board.pop()
         return model_input
     
@@ -35,7 +35,10 @@ class ChessBot:
         for move in moves:
             model_inputs.append(self.convert_move_to_model_input(board, move))
 
-        predictions = self.model.predict(np.array(model_inputs))
-        move_index = predictions.argmax() if self.color == chess.WHITE else predictions.argmin()
+        predictions = self.model.predict(np.array(model_inputs))       
+        # color_idx = 2 if self.color == chess.WHITE else 0
+        # move_index = predictions[:,color_idx].argmax()
+        move_index = np.argmax(predictions) if self.color == chess.WHITE else np.argmin(predictions)
+        print(predictions[move_index])
 
         return model_inputs[move_index], moves[move_index]
