@@ -35,7 +35,7 @@ from search_tree.experiments.CNN.board_processing import Boardprocessing
 # have pretty heavily deviated from the original MCTS implementation
 # is more of a UCT implementation now mixed with a few other ideas
 class MCTS():
-    def __init__(self, max_time=10, num_simulations=450, player='white', max_depth=25, policy_nn=None, value_nn=None, model_input=None, use_heap=False, expand_mode=False):
+    def __init__(self, max_time=10, num_simulations=450, player='white', max_depth=50, policy_nn=None, value_nn=None, model_input=None, use_heap=False, expand_mode=False):
         self.board = chess.Board()
         self.player = player
         self.time_limit = max_time
@@ -152,7 +152,7 @@ class MCTS():
 
             # currently.... is supposed to only expand one but I like the idea of expanding all
             # doesnt work well though. Is a stop gap measure until we have a policy network
-            if not self.expand_mode:
+            if not self.expand_mode or self.move_count < 3:
                 for move in legal_moves:
 
                     board = chess.Board(board_start.fen())
@@ -177,8 +177,10 @@ class MCTS():
                         if self.heap_mark:
                             heapq.heappush(self.leaf_heapq, child)
             else:
+                move = None
                 try:
-                    move = self.move_pred(Boardprocessing(board_start).get_board_image())
+                    if self.move_count > 25:
+                        move = self.move_pred(Boardprocessing(board_start).get_board_image())
                 except:
                     move = None
                 if move == None or move not in legal_moves:
