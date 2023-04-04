@@ -140,6 +140,17 @@ class ModelInput:
                 self.king.flatten(),
                 self.pawns.flatten()
             ])
+    
+    def get_matrix_positions(self):
+        print(self.rooks)
+        return np.concatenate([
+                self.rooks.flatten(),
+                self.knights.flatten(),
+                self.bishops.flatten(),
+                self.queen.flatten(),
+                self.king.flatten(),
+                self.pawns.flatten()
+            ])
 
     def get_misc_features(self):
         return np.concatenate([
@@ -164,6 +175,9 @@ class ModelInput:
         if self.input_type == 'positions':
             return self.get_flattened_positions()
         
+        if self.input_type == 'matrix':
+            return self.parse_simple_board(board)
+        
         self.parse_misc_features(board)
         self.atk_lst(board)
         return self.get_flattened_positions(), self.attacks, self.get_misc_features()
@@ -174,6 +188,9 @@ class ModelInput:
         
         if self.input_type == 'positions':
             return self.get_flattened_positions().shape[0]
+        
+        if self.input_type == 'matrix':
+            return self.parse_simple_board(chess.Board()).shape
         
         return np.array([self.get_flattened_positions().shape[0], self.attacks.shape[0], self.get_misc_features().shape[0]])
 
