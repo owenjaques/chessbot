@@ -35,7 +35,7 @@ from search_tree.experiments.CNN.board_processing import Boardprocessing
 # have pretty heavily deviated from the original MCTS implementation
 # is more of a UCT implementation now mixed with a few other ideas
 class MCTS():
-    def __init__(self, max_time=10, num_simulations=450, player='white', max_depth=25, policy_nn=None, value_nn=None, model_input=None, use_heap=False, expand_mode=True):
+    def __init__(self, max_time=10, num_simulations=450, player='white', max_depth=25, policy_nn=None, value_nn=None, model_input=None, use_heap=False, expand_mode=False):
         self.board = chess.Board()
         self.player = player
         self.time_limit = max_time
@@ -183,7 +183,7 @@ class MCTS():
                     move = None
                 if move == None or move not in legal_moves:
                     move = random.choice(legal_moves)
-                    
+
                 board = chess.Board(board_start.fen())
                 board.push(move)
                 if self.heap_mark and ( board.fen() in self.nodes ):
@@ -244,7 +244,7 @@ class MCTS():
                 turn = -1
             return b_val*turn
         value = self.predict(board)
-        return value
+        return value+b_val
     
     def evaluate_material(self, board):
         material = 0
@@ -297,13 +297,13 @@ class MCTS():
         sims = self.num_simulations
         depth = self.max_depth
 
-        if self.move_count < 10:
+        if self.move_count < 5:
             sims = int(self.num_simulations/15)
             depth = int(self.max_depth*15)
-        elif self.move_count < 20:
+        elif self.move_count < 10:
             sims = int(self.num_simulations/10)
             depth = int(self.max_depth*10)
-        elif self.move_count < 30:
+        elif self.move_count < 15:
             sims = int(self.num_simulations/5)
             depth = int(self.max_depth*5)
 
