@@ -35,7 +35,7 @@ from search_tree.experiments.CNN.board_processing import Boardprocessing
 # have pretty heavily deviated from the original MCTS implementation
 # is more of a UCT implementation now mixed with a few other ideas
 class MCTS():
-    def __init__(self, max_time=10, num_simulations=450, player='white', max_depth=50, policy_nn=None, value_nn=None, model_input=None, use_heap=False, expand_mode=False):
+    def __init__(self, max_time=10, num_simulations=250, player='white', max_depth=25, policy_nn=None, value_nn=None, model_input=None, use_heap=False, expand_mode=False):
         self.board = chess.Board()
         self.player = player
         self.time_limit = max_time
@@ -83,6 +83,9 @@ class MCTS():
     def search(self, board):
         start_time = time.time()
 
+        if len(list(board.legal_moves)) == 1:
+            return list(board.legal_moves)[0]
+
         # set the root node
         self.set_root(board)
 
@@ -115,7 +118,9 @@ class MCTS():
                     if self.value != None:
                         value = self.evaluate(node)
                     else:
-                        value = sum(self.nodes[child].value for child in self.nodes[node].children)
+                        # unsure about this... need to test more
+                        #value = sum(self.nodes[child].value for child in self.nodes[node].children)
+                        value = min(self.nodes[child].value for child in self.nodes[node].children)
 
                 self.backpropagate(node, value)
 
@@ -173,9 +178,12 @@ class MCTS():
                         child.set_terminal(True)
                         self.nodes[node].add_child(child.board.fen())
                         self.nodes[child.board.fen()] = child   
-                        self.nodes[node].terminal = False
-                        if self.heap_mark:
-                            heapq.heappush(self.leaf_heapq, child)
+                        if abs(child.value) != 1:
+                            self.nodes[node].terminal = False
+                            if self.heap_mark:
+                                heapq.heappush(self.leaf_heapq, child)
+                        else:
+                            self.nodes[node].terminal = True
             else:
                 move = None
                 try:
@@ -204,9 +212,12 @@ class MCTS():
                     child.set_terminal(True)
                     self.nodes[node].add_child(child.board.fen())
                     self.nodes[child.board.fen()] = child   
-                    self.nodes[node].terminal = False
-                    if self.heap_mark:
-                        heapq.heappush(self.leaf_heapq, child)
+                    if abs(child.value) != 1:
+                        self.nodes[node].terminal = False
+                        if self.heap_mark:
+                            heapq.heappush(self.leaf_heapq, child)
+                    else:
+                        self.nodes[node].terminal = True
 
         else:
             print("Error: node has no board")
@@ -309,6 +320,7 @@ class MCTS():
             sims = int(self.num_simulations/5)
             depth = int(self.max_depth*5)
 
+        # sample up to depth
         if self.value != None:
             for _ in range(sims):
                 sim_board = chess.Board(board.fen())
@@ -326,7 +338,7 @@ class MCTS():
                         sim_turn = 1
                     value += self.predict(sim_board)*sim_turn*turn
 
-            return value/sims
+            value = value/sims
         else:
             for _ in range(sims):
                 sim_board = chess.Board(board.fen())
@@ -337,7 +349,10 @@ class MCTS():
                     move = random.choice(legal_moves)
                     sim_board.push(move)
                 value += self.get_board_value(sim_board)*turn
-            return value/sims
+            value = value/sims
+
+        # not sure what would work better here min or max...
+        return value
     
 
     def get_board_value(self, board):
@@ -353,6 +368,7 @@ class MCTS():
         else:
             # probably better to return a value scaled by the depth and board_sum
             board_sum = self.evaluate_material(board) + self.evaluate_position(board)
+            """
             if board_sum < 0 :
                 return -0.2
             elif board_sum > 0:
@@ -360,13 +376,13 @@ class MCTS():
             else:
                 return board_sum
             """
-            if 0 < board_sum < 5 :
+            if 0 < board_sum < 4:
                 return 0.2
-            elif -5 < board_sum < 0:
+            elif -4 < board_sum < 0:
                 return 0.2
             else:
                 return 0.5*board_sum
-            """
+            
         
     def backpropagate(self, node, value):
         # backpropagate the value of the board
