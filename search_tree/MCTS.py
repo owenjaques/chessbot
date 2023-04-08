@@ -20,7 +20,6 @@ import queue
 import heapq
 import sys 
 sys.path.append('..')
-import pickle
 
 import contextlib
 
@@ -35,7 +34,7 @@ from search_tree.experiments.CNN.board_processing import Boardprocessing
 # have pretty heavily deviated from the original MCTS implementation
 # is more of a UCT implementation now mixed with a few other ideas
 class MCTS():
-    def __init__(self, max_time=10, num_simulations=250, player='white', max_depth=25, policy_nn=None, value_nn=None, model_input=None, use_heap=False, expand_mode=False):
+    def __init__(self, max_time=10, num_simulations=700, player='white', max_depth=8, policy_nn=None, value_nn=None, value_nn_2=None, model_input=None, use_heap=False, expand_mode=False):
         self.board = chess.Board()
         self.player = player
         self.time_limit = max_time
@@ -43,6 +42,7 @@ class MCTS():
         self.max_depth = max_depth
         self.policy = policy_nn
         self.value = value_nn
+        self.value_two = value_nn_2
         self.heap_mark = use_heap
         self.nodes = {}
         self.best_move_value = 0
@@ -51,6 +51,7 @@ class MCTS():
         self.expand_mode = expand_mode
         with open('models_move\\move_prediction_logreg_V1.pkl', 'rb') as f:
             self.move_pred = pickle.load(f)
+
 
     def get_best_move_value(self, board):
         # get the best move after the last search and return the value of the node
@@ -90,13 +91,9 @@ class MCTS():
         self.set_root(board)
 
         node = self.nodes[self.root]
-        t = 0
-        if self.move_count < 10 and self.time_limit > 20:
-            t = 20
-        else:
-            t = self.time_limit
+
         # while the time limit has not been reached
-        while time.time() - start_time < t:
+        while time.time() - start_time < self.time_limit:
             # get the next node to simulate
             if self.heap_mark and len(self.leaf_heapq) > 0:
                 node = heapq.heappop(self.leaf_heapq).board.fen()
@@ -113,14 +110,17 @@ class MCTS():
 
                 # left as a placeholder for now to test
                 if self.expand_mode:
-                    value = self.evaluate(node)
+                    value = -self.evaluate(node)
                 else:
                     if self.value != None:
-                        value = self.evaluate(node)
+                        value = -self.evaluate(node)
                     else:
                         # unsure about this... need to test more
-                        #value = sum(self.nodes[child].value for child in self.nodes[node].children)
-                        value = min(self.nodes[child].value for child in self.nodes[node].children)
+                        if self.heap_mark:
+                            value = sum(self.nodes[child].value for child in self.nodes[node].children)
+                        else:
+                            value = sum(self.nodes[child].value for child in self.nodes[node].children)/len(self.nodes[node].children)
+                        #value = min(self.nodes[child].value for child in self.nodes[node].children)
 
                 self.backpropagate(node, value)
 
@@ -131,17 +131,21 @@ class MCTS():
     def select(self, node):
         # select the best child of the node
         # if the node has no children, return None
+        best_nodes = []
         if len(self.nodes[node].children) == 0:
             return None
         else:
             min_value = math.inf
-            best_child = None
             for child in self.nodes[node].children:
                 child_value = self.nodes[child].value / self.nodes[child].visits + math.sqrt(2 * math.log(self.nodes[node].visits) / (self.nodes[child].visits+1))
                 if child_value < min_value:
                     min_value = self.nodes[child].value
-                    best_child = child
-            return best_child
+            for child in self.nodes[node].children:
+                child_value = self.nodes[child].value / self.nodes[child].visits + math.sqrt(2 * math.log(self.nodes[node].visits) / (self.nodes[child].visits+1))
+                if child_value == min_value:
+                    best_nodes.append(child)
+
+            return random.choice(best_nodes)
 
     
     def expand(self, node):
@@ -172,7 +176,7 @@ class MCTS():
                         child.set_action(move)
                         child.set_depth(self.nodes[node].depth + 1)
                         if self.value != None:
-                            child.set_value(self.predict(board))
+                            child.set_value((self.predict(child.board)+ self.predict_two(child.board))/2)
                         else:   
                             child.add_value(self.evaluate(child.board))
                         child.set_terminal(True)
@@ -236,6 +240,9 @@ class MCTS():
             return self.heuristic(board)
     
     def heuristic(self, board):
+        turn = 1
+        if board.turn:
+            turn = -1
         if board.is_checkmate():
             return -1
         if board.is_stalemate():
@@ -246,29 +253,27 @@ class MCTS():
             return 0
         if board.can_claim_threefold_repetition():
             return 0
+        mat_val = self.evaluate_material(board)
         if self.value == None:
-            return self.rollout(board)
-        # not sure if this is the best way to do this
-        # try with just value and evaluate_material, evaluate_position
-        b_val = self.get_board_value(board)
-        if abs(b_val) == 1:
-            turn = 1
-            if board.turn:
-                turn = -1
-            return b_val*turn
-        value = self.predict(board)
-        return value+b_val
-    
+            if mat_val*turn > 9:
+                return self.rollout(board)
+            if mat_val*turn < -9:
+                return self.rollout(board)
+        #return self.rollout(board) + (self.evaluate_position(board) + mat_val)*turn
+        return max(-1, min(self.rollout(board) + (self.evaluate_position(board) + mat_val)*turn, 1))
+
+      
+
     def evaluate_material(self, board):
         material = 0
         try:
             material += len(board.pieces(chess.PAWN, chess.WHITE)) * 1
-            material += len(board.pieces(chess.KNIGHT, chess.WHITE)) * 3
+            material += len(board.pieces(chess.KNIGHT, chess.WHITE)) * 4
             material += len(board.pieces(chess.BISHOP, chess.WHITE)) * 3
             material += len(board.pieces(chess.ROOK, chess.WHITE)) * 5
             material += len(board.pieces(chess.QUEEN, chess.WHITE)) * 9
             material += len(board.pieces(chess.PAWN, chess.BLACK)) * -1
-            material += len(board.pieces(chess.KNIGHT, chess.BLACK)) * -3
+            material += len(board.pieces(chess.KNIGHT, chess.BLACK)) * -4
             material += len(board.pieces(chess.BISHOP, chess.BLACK)) * -3
             material += len(board.pieces(chess.ROOK, chess.BLACK)) * -5
             material += len(board.pieces(chess.QUEEN, chess.BLACK)) * -9
@@ -279,6 +284,15 @@ class MCTS():
     def evaluate_position(self, board):
         position = 0
         try:
+            # this is bad... should be evaluating the board position of the move
+            # not the board position of the board
+            for square in chess.SQUARES:
+                position += len(board.attackers(chess.WHITE, square))*0.1
+                position += len(board.attackers(chess.BLACK, square))*-0.1
+                position += len(board.defenders(chess.WHITE, square))*0.2
+                position += len(board.defenders(chess.BLACK, square))*-0.2
+
+            # add bonus for center control
             position += len(board.attackers(chess.WHITE, chess.E4)) * 0.1
             position += len(board.attackers(chess.WHITE, chess.D4)) * 0.1
             position += len(board.attackers(chess.WHITE, chess.E5)) * 0.1
@@ -310,6 +324,7 @@ class MCTS():
         sims = self.num_simulations
         depth = self.max_depth
 
+        
         if self.move_count < 5:
             sims = int(self.num_simulations/15)
             depth = int(self.max_depth*15)
@@ -319,6 +334,7 @@ class MCTS():
         elif self.move_count < 15:
             sims = int(self.num_simulations/5)
             depth = int(self.max_depth*5)
+
 
         # sample up to depth
         if self.value != None:
@@ -342,7 +358,7 @@ class MCTS():
         else:
             for _ in range(sims):
                 sim_board = chess.Board(board.fen())
-                for i in range(depth):
+                for i in range( random.randint(0, depth)):
                     legal_moves = list(sim_board.legal_moves)
                     if len(legal_moves) == 0:
                         break
@@ -368,7 +384,7 @@ class MCTS():
         else:
             # probably better to return a value scaled by the depth and board_sum
             board_sum = self.evaluate_material(board) + self.evaluate_position(board)
-            """
+            
             if board_sum < 0 :
                 return -0.2
             elif board_sum > 0:
@@ -376,12 +392,13 @@ class MCTS():
             else:
                 return board_sum
             """
-            if 0 < board_sum < 4:
-                return 0.2
-            elif -4 < board_sum < 0:
-                return 0.2
+            if 0 < board_sum < 2:
+                return 0.1
+            elif -2 < board_sum < 0:
+                return 0.1
             else:
                 return 0.5*board_sum
+            """
             
         
     def backpropagate(self, node, value):
@@ -400,6 +417,14 @@ class MCTS():
         if self.value == None or self.model_input == None:
             return 0
         value = -(self.value.predict(np.array([ModelInput(self.model_input).get_input(board)]), verbose=0)[0][0]*2 - 1)
+        return value
+    
+    def predict_two(self, board):
+        # use a neural network to predict the value of the board
+        # for now, just return 0
+        if self.value_two == None or self.model_input == None:
+            return 0
+        value = -(self.value_two.predict(np.array([ModelInput(self.model_input).get_input(board)]), verbose=0)[0][0]*2 - 1)
         return value
     
     def best_move(self):
