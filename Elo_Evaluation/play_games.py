@@ -66,7 +66,7 @@ def run_elo_evaluation(our_agent, stockfish_opponent, display_board):
     #starting elo
     our_elo = 1500
     #list of elos which will set the stokcfish engine's elo for each game
-    elos = list(range(1000, 1501, 50))
+    elos = list(range(1000, 1201, 50))
     random.shuffle(elos)
 
     for elo in elos:

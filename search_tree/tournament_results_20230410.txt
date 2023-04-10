@@ -1,0 +1,12 @@
+BTFSimpleAgent wins: 0.5 
+BTFSimpleAgent games_played: 1 
+BTFSimpleAgent failed_games: 0 
+BTFSimpleAgent elo: 1000.0 
+BTFSimpleAgent wins_against OWENSimpleAgent : 0.5 
+BTFSimpleAgent games_against OWENSimpleAgent : 1 
+OWENSimpleAgent wins: 0.5 
+OWENSimpleAgent games_played: 1 
+OWENSimpleAgent failed_games: 0 
+OWENSimpleAgent elo: 1000.0 
+OWENSimpleAgent wins_against BTFSimpleAgent : 0.5 
+OWENSimpleAgent games_against BTFSimpleAgent : 1 

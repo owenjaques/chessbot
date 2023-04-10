@@ -109,9 +109,9 @@ class MCTSHeapAgent:
 class MCTSHeapAgent2000and15:
     def __init__(self):
         self.name = "MCTS Heap Agent time 60 num_simulations 2000 max_depth 15"
-        self.searcher = MCTS(max_time = 30, use_heap=True)
+        self.searcher = MCTS(max_time = 60, use_heap=True)
     def initialize(self, color):
-        self.searcher = MCTS(max_time = 30, num_simulations=2000, max_depth=15, use_heap=True)
+        self.searcher = MCTS(max_time = 60, num_simulations=2000, max_depth=15, use_heap=True)
         pass
     def get_move(self, board):
         # get the best move
