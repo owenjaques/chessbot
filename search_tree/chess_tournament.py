@@ -32,12 +32,15 @@ class TournamentResults:
         self.agents = agents
         self.results = {}
         self.failed_games = {}
+        self.draws = {}
         self.elo = {}
         for agent in agents:
             self.results[agent.name] = 0
+            self.draws[agent.name] = 0
             # store the results of each agent against each other agent
             for agent2 in agents:
                 self.results[agent.name + " wins_against " + agent2.name] = 0
+                self.results[agent.name + " draws_against " + agent2.name] = 0
                 self.results[agent.name + " games_against " + agent2.name] = 0
             self.failed_games[agent.name] = 0
 
@@ -97,6 +100,12 @@ class ChessTournament():
                         tournament_results.results[agent2.name] = game_results.results[agent2.name]
                     else:
                         tournament_results.results[agent2.name] += game_results.results[agent2.name]
+                    if elo_result == 0:
+                        tournament_results.draws[agent1.name] += 1
+                        tournament_results.draws[agent2.name] += 1
+                        # draws against:
+                        tournament_results.results[agent1.name + " draws_against " + agent2.name] += 1
+                        tournament_results.results[agent2.name + " draws_against " + agent1.name] += 1
                     # update the results of each agent against each other agent
                     if agent1.name + " " + agent2.name not in tournament_results.results:
                         tournament_results.results[agent1.name + " " + agent2.name] = game_results.results[agent1.name]
@@ -229,21 +238,27 @@ class ChessTournament():
                 if split_line[1] == "wins:":
                     # add the agent result to the tournament results
                     tournament_results.results[split_line[0]] = float(split_line[2])
-                if split_line[1] == "games_played:":
+                elif split_line[1] == "games_played:":
                     # add the agent result to the tournament results
                     tournament_results.results[split_line[0] + " games played"] = int(split_line[2])
-                if split_line[1] == "failed_games:": 
+                elif split_line[1] == "failed_games:": 
                     # add the agent result to the tournament results
                     tournament_results.failed_games[split_line[0]] = int(split_line[2])
-                if split_line[1] == "elo:": 
+                elif split_line[1] == "elo:": 
                     # add the agent result to the tournament results
                     tournament_results.elo[split_line[0]] = int(round(float(split_line[2])))
-                if split_line[1] == "wins_against":
+                elif split_line[1] == "wins_against":
                     # add the agent vs agent result to the tournament results
                     tournament_results.results[split_line[0] + " " + split_line[2]] = float(split_line[4])
-                if split_line[1] == "games_against":
+                elif split_line[1] == "games_against":
                     # add the agent vs agent result to the tournament results
                     tournament_results.results[split_line[0] + " " + split_line[2] + " games played"] = int(split_line[4])
+                elif split_line[1] == 'draws:':
+                    # add the agent result to the tournament results
+                    tournament_results.results[split_line[0] + " draws"] = int(split_line[2])
+                elif split_line[1] == 'draws_against':
+                    # add the agent vs agent result to the tournament results
+                    tournament_results.results[split_line[0] + " " + split_line[2] + " draws"] = int(split_line[4])
             # close the file
             file.close()
         # return the tournament results
@@ -263,6 +278,7 @@ class ChessTournament():
             if agent.name in tournament_results.results:
                 # write the agent results to the file
                 file.write(agent.name + " wins: " + str(tournament_results.results[agent.name]) + " \n")
+                file.write(agent.name + " draws: " + str(tournament_results.results[agent.name + " draws"]) + " \n")
                 file.write(agent.name + " games_played: " + str(tournament_results.results[agent.name + " games played"]) + " \n")
                 file.write(agent.name + " failed_games: " + str(tournament_results.failed_games[agent.name]) + " \n")
                 # save elo rating
@@ -270,6 +286,8 @@ class ChessTournament():
                 # loop through the agents
             for agent2 in tournament_results.agents:
                 # write the agent against agent results to the file
+                if agent.name + " draws_against " + agent2.name in tournament_results.results:
+                    file.write(agent.name + " draws_against " + agent2.name + " : " + str(tournament_results.results[agent.name + " draws_against " + agent2.name]) + " \n")
                 # check if agents have played eachother
                 if agent.name + " " + agent2.name in tournament_results.results:
                     file.write(agent.name + " wins_against " + agent2.name + " : " + str(tournament_results.results[agent.name + " " + agent2.name]) + " \n")
@@ -296,7 +314,7 @@ class ChessTournament():
                     print(agent.name + " wins_against " + agent2.name + " : " + str(tournament_results.results[agent.name + " " + agent2.name]))
                     print(agent.name + " games_against " + agent2.name + " : " + str(tournament_results.results[agent.name + " " + agent2.name + " games played"]))
 
-
+    #################### NEED TO FIX THIS ####################
     # plot the tournament results as a heat map and save the heat map
     def plot_tournament_results(self, tournament_results):
         # create a list of the agent names
