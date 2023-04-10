@@ -95,6 +95,21 @@ class MCTSAgent:
 
 # MCTS with Owens Simple Input Neural Network
 
+class MCTSBtfSingle:
+    def __init__(self):
+        self.name = "MCTS BTF Single Input"
+        self.model = keras.models.load_model('bin/btf/single_input_model/model')
+        self.searcher = MCTS(max_time = 30, use_heap=True)
+    def initialize(self,color):
+        self.searcher = MCTS(max_time = 30, value_nn=self.model, model_input='positions', use_heap=False)
+        pass
+    def get_move(self, board):
+        # get the best move
+        move = self.searcher.search(board)
+        # return the best move
+        return move
+
+
 class MCTSBtfSimple:
     def __init__(self):
         self.name = "MCTS BTF Simple Input"
@@ -108,6 +123,21 @@ class MCTSBtfSimple:
         move = self.searcher.search(board)
         # return the best move
         return move
+    
+class MCTSOwenSingle:
+    def __init__(self):
+        self.name = "MCTS Owen Single Input"
+        self.model = keras.models.load_model('bin/owen/single_input_model/model')
+        self.searcher = MCTS(max_time = 30, use_heap=True)
+    def initialize(self,color):
+        self.searcher = MCTS(max_time = 30, value_nn=self.model, model_input='positions', use_heap=False)
+        pass
+    def get_move(self, board):
+        # get the best move
+        move = self.searcher.search(board)
+        # return the best move
+        return move
+
     
 class MCTSOwenSimple:
     def __init__(self):

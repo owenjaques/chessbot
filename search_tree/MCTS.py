@@ -113,14 +113,21 @@ class MCTS():
                     value = self.evaluate(node)
                 else:
                     if self.value != None:
-                        value = min(self.nodes[child].value for child in self.nodes[node].children)
+                        #value = min(self.nodes[child].value for child in self.nodes[node].children)
                         #value = self.nodes[node].value
                         #value = self.evaluate(node)
+                        try:
+                            value = sum(self.nodes[child].value for child in self.nodes[node].children)/len(self.nodes[node].children)
+                        except:
+                            value = self.evaluate(node)
                     else:
                         # unsure about this... need to test more
                         if self.heap_mark:
                             #value = sum(self.nodes[child].value for child in self.nodes[node].children)
-                            value = min(self.nodes[child].value for child in self.nodes[node].children)
+                            try:
+                                value = min(self.nodes[child].value for child in self.nodes[node].children)
+                            except:
+                                value = self.evaluate(node)
                             #value = self.evaluate(node)
                             #value = self.rollout(node)
                         else:
@@ -141,7 +148,7 @@ class MCTS():
             min_value = math.inf
             best_child = None
             for child in self.nodes[node].children:
-                child_value = self.nodes[child].value / self.nodes[child].visits - math.sqrt(2 * math.log(self.nodes[node].visits) / (self.nodes[child].visits+1))
+                child_value = self.nodes[child].value / self.nodes[child].visits + math.sqrt(2 * math.log(self.nodes[node].visits) / (self.nodes[child].visits+1))
                 if child_value < min_value:
                     min_value = self.nodes[child].value
                     best_child = child
