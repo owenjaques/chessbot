@@ -113,8 +113,8 @@ class MCTS():
                     value = self.evaluate(node)
                 else:
                     if self.value != None:
-                        #value = self.nodes[node].value
-                        value = self.evaluate(node)
+                        value = self.nodes[node].value
+                        #value = self.evaluate(node)
                     else:
                         # unsure about this... need to test more
                         if self.heap_mark:
@@ -139,7 +139,7 @@ class MCTS():
             min_value = math.inf
             best_child = None
             for child in self.nodes[node].children:
-                child_value = self.nodes[child].value / self.nodes[child].visits + math.sqrt(2 * math.log(self.nodes[node].visits) / (self.nodes[child].visits+1))
+                child_value = self.nodes[child].value / self.nodes[child].visits - math.sqrt(2 * math.log(self.nodes[node].visits) / (self.nodes[child].visits+1))
                 if child_value < min_value:
                     min_value = self.nodes[child].value
                     best_child = child
@@ -245,10 +245,10 @@ class MCTS():
             # this is bad... should be evaluating the board position of the move
             # not the board position of the board
             for square in chess.SQUARES:
-                position += len(board.attackers(chess.WHITE, square))*0.1
-                position += len(board.attackers(chess.BLACK, square))*-0.1
-                position += len(board.defenders(chess.WHITE, square))*0.1
-                position += len(board.defenders(chess.BLACK, square))*-0.1
+                position += len(board.attackers(chess.WHITE, square))*0.2
+                position += len(board.attackers(chess.BLACK, square))*-0.2
+                position += len(board.defenders(chess.WHITE, square))*0.2
+                position += len(board.defenders(chess.BLACK, square))*-0.2
 
             # add bonus for center control
             position += len(board.attackers(chess.WHITE, chess.E4)) * 0.1
@@ -354,7 +354,7 @@ class MCTS():
         if node == None or self.nodes[node] == None:
             return
         self.nodes[node].add_visit(1)
-        self.nodes[node].value = (self.nodes[node].value*self.nodes[node].visits + value)/(self.nodes[node].visits + 1)
+        self.nodes[node].value = (self.nodes[node].value*self.nodes[node].visits - value)/(self.nodes[node].visits + 1)
         if self.nodes[node].parent != None:
             self.backpropagate(self.nodes[node].parent, -value)
         
