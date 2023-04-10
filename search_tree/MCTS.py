@@ -36,7 +36,7 @@ from search_tree.experiments.CNN.board_processing import Boardprocessing
 # have pretty heavily deviated from the original MCTS implementation
 # is more of a UCT implementation now mixed with a few other ideas
 class MCTS():
-    def __init__(self, max_time=10, num_simulations=2500, player='white', max_depth=25, policy_nn=None, value_nn=None, value_nn_2=None, model_input=None, use_heap=False, expand_mode=False):
+    def __init__(self, max_time=10, num_simulations=500, player='white', max_depth=25, policy_nn=None, value_nn=None, value_nn_2=None, model_input=None, use_heap=False, expand_mode=False):
         self.board = chess.Board()
         self.player = player
         self.time_limit = max_time
@@ -113,13 +113,14 @@ class MCTS():
                     value = self.evaluate(node)
                 else:
                     if self.value != None:
-                        value = self.nodes[node].value
-                        #value = self.evaluate(node)
+                        #value = self.nodes[node].value
+                        value = self.evaluate(node)
                     else:
                         # unsure about this... need to test more
                         if self.heap_mark:
                             #value = sum(self.nodes[child].value for child in self.nodes[node].children)
-                            value = self.evaluate(node)
+                            value = min(self.nodes[child].value for child in self.nodes[node].children)
+                            #value = self.evaluate(node)
                             #value = self.rollout(node)
                         else:
                             #value = sum(self.nodes[child].value for child in self.nodes[node].children)/len(self.nodes[node].children)
@@ -177,9 +178,12 @@ class MCTS():
                 child.set_terminal(True)
                 self.nodes[node].add_child(child.board.fen())
                 self.nodes[child.board.fen()] = child
-                self.nodes[node].terminal = False
-                if self.heap_mark:
-                    heapq.heappush(self.leaf_heapq, child)
+                if abs(child.value) != 1:
+                    self.nodes[node].terminal = False
+                    if self.heap_mark:
+                        heapq.heappush(self.leaf_heapq, child)
+                else:
+                    self.nodes[node].terminal = True
 
         else:
             print("Error: node has no board")
@@ -212,14 +216,16 @@ class MCTS():
         if board.can_claim_fifty_moves():
             return 0
         if board.can_claim_threefold_repetition():
-            return 0
-        mat_val = self.evaluate_material(board)
+            return 1
+        b_val = self.get_board_value(board)
+        if abs(b_val) == 1:
+            return b_val
         if self.value == None and self.heap_mark:
-            return self.rollout(board) + (self.evaluate_position(board) + mat_val)*turn
+            return self.rollout(board) + b_val
         elif self.value == None and not self.heap_mark:
             return self.rollout(board)
-        return max(-1, min((self.nodes[board.fen()].value + (self.evaluate_position(board) + mat_val)*turn)/2, 1))
-        #return max(-1, min((self.evaluate_position(board) + mat_val)*turn, 1))
+        return max(-1, min((self.nodes[board.fen()].value + b_val)/1.36, 1))
+
 
       
     def evaluate_material(self, board):
@@ -245,10 +251,10 @@ class MCTS():
             # this is bad... should be evaluating the board position of the move
             # not the board position of the board
             for square in chess.SQUARES:
-                position += len(board.attackers(chess.WHITE, square))*0.2
-                position += len(board.attackers(chess.BLACK, square))*-0.2
-                position += len(board.defenders(chess.WHITE, square))*0.2
-                position += len(board.defenders(chess.BLACK, square))*-0.2
+                position += len(board.attackers(chess.WHITE, square))*0.1
+                position += len(board.attackers(chess.BLACK, square))*-0.1
+                position += len(board.defenders(chess.WHITE, square))*0.1
+                position += len(board.defenders(chess.BLACK, square))*-0.1
 
             # add bonus for center control
             position += len(board.attackers(chess.WHITE, chess.E4)) * 0.1
@@ -342,10 +348,10 @@ class MCTS():
                 turn = 1
             # probably better to return a value scaled by the depth and board_sum
             board_sum = self.evaluate_material(board) + self.evaluate_position(board)
-            if board_sum < 0 :
-                return -0.5*turn
-            elif board_sum > 0:
-                return 0.5*turn
+            if -4 < board_sum < 0 :
+                return -0.2*turn
+            elif 4 > board_sum > 0:
+                return 0.2*turn
             else:
                 return board_sum*turn
             
@@ -356,7 +362,7 @@ class MCTS():
         self.nodes[node].add_visit(1)
         self.nodes[node].value = (self.nodes[node].value*self.nodes[node].visits - value)/(self.nodes[node].visits + 1)
         if self.nodes[node].parent != None:
-            self.backpropagate(self.nodes[node].parent, -value)
+            self.backpropagate(self.nodes[node].parent, value)
         
 
     # returns - if good for parent, + if good for child (next to play)
