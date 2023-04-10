@@ -110,7 +110,7 @@ class MCTS():
                 board = chess.Board(self.nodes[node].board.fen())
                 # left as a placeholder for now to test
                 if self.expand_mode:
-                    value = -self.evaluate(node)
+                    value = self.evaluate(node)
                 else:
                     if self.value != None:
                         value = self.nodes[node].value
