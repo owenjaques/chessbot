@@ -25,17 +25,61 @@ from stockfish import Stockfish
 
 ###########################################################################################
 ##################################  The agent to beat  ####################################
-class StockfishAgent:
+class StockfishAgent20:
     def __init__(self):
         self.path = os.getcwd()+"/stockfish_15.1_win_x64_avx2/stockfish-windows-2022-x86-64-avx2.exe"
-        self.stockfish = Stockfish(self.path)
-        self.name = "Stockfish 5 second limit"
+        self.stockfish = Stockfish(self.path, parameters={"Threads": 1, "UCI_LimitStrength": True, "Skill Level": 20})
+        self.name = "Stockfish 20 Elo"
     def initialize(self, color):
         pass
     def get_move(self, board):
         self.stockfish.set_fen_position(board.fen())
-        move = self.stockfish.get_best_move_time(5)
+        self.stockfish.update_engine_parameters({"UCI_Elo:": 20})
+        move = self.stockfish.get_best_move()
         return move
+    
+
+class StockfishAgent1000:
+    def __init__(self):
+        self.path = os.getcwd()+"/stockfish_15.1_win_x64_avx2/stockfish-windows-2022-x86-64-avx2.exe"
+        self.stockfish = Stockfish(self.path, parameters={"Threads": 1, "UCI_LimitStrength": True, "Skill Level": 20})
+        self.name = "Stockfish 1000 Elo"
+    def initialize(self, color):
+        pass
+    def get_move(self, board):
+        self.stockfish.set_fen_position(board.fen())
+        self.stockfish.update_engine_parameters({"UCI_Elo:": 1000})
+        move = self.stockfish.get_best_move()
+        return move
+    
+class StockfishAgent1350:
+    def __init__(self):
+        self.path = os.getcwd()+"/stockfish_15.1_win_x64_avx2/stockfish-windows-2022-x86-64-avx2.exe"
+        self.stockfish = Stockfish(self.path, parameters={"Threads": 1, "UCI_LimitStrength": True, "Skill Level": 20})
+        self.name = "Stockfish 1350 Elo"
+    def initialize(self, color):
+        pass
+    def get_move(self, board):
+        self.stockfish.set_fen_position(board.fen())
+        self.stockfish.update_engine_parameters({"UCI_Elo:": 1350})
+        move = self.stockfish.get_best_move()
+        return move
+
+class StockfishAgent2000:
+    def __init__(self):
+        self.path = os.getcwd()+"/stockfish_15.1_win_x64_avx2/stockfish-windows-2022-x86-64-avx2.exe"
+        self.stockfish = Stockfish(self.path, parameters={"Threads": 1, "UCI_LimitStrength": True, "Skill Level": 20})
+        self.name = "Stockfish 2000 Elo"
+    def initialize(self, color):
+        pass
+    def get_move(self, board):
+        self.stockfish.set_fen_position(board.fen())
+        self.stockfish.update_engine_parameters({"UCI_Elo:": 2000})
+        move = self.stockfish.get_best_move()
+        return move
+    
+
+
 
 
 ###########################################################################################
@@ -56,6 +100,8 @@ class MCTSHeapAgent:
         move = self.searcher.search(board)
         # return the best move
         return move
+    def get_next_move(self, board):
+        return self.get_move(board)
 
 # MCTS agent on its own with no neural network
 # uses heap method for tree search
@@ -71,7 +117,9 @@ class MCTSHeapAgent2000and15:
         # get the best move
         move = self.searcher.search(board)
         # return the best move
-        return move
+        return move    
+    def get_next_move(self, board):
+        return self.get_move(board)
     
 # MCTS agent on its own with no neural network
 # uses UCT selection method for tree search
@@ -88,6 +136,8 @@ class MCTSAgent:
         move = self.searcher.search(board)
         # return the best move
         return move
+    def get_next_move(self, board):
+        return self.get_move(board)
     
     
 ###########################################################################################
@@ -108,6 +158,8 @@ class MCTSBtfSingle:
         move = self.searcher.search(board)
         # return the best move
         return move
+    def get_next_move(self, board):
+        return self.get_move(board)
 
 
 class MCTSBtfSimple:
@@ -123,6 +175,8 @@ class MCTSBtfSimple:
         move = self.searcher.search(board)
         # return the best move
         return move
+    def get_next_move(self, board):
+        return self.get_move(board)
     
 class MCTSOwenSingle:
     def __init__(self):
@@ -137,6 +191,8 @@ class MCTSOwenSingle:
         move = self.searcher.search(board)
         # return the best move
         return move
+    def get_next_move(self, board):
+        return self.get_move(board)
 
     
 class MCTSOwenSimple:
@@ -152,6 +208,8 @@ class MCTSOwenSimple:
         move = self.searcher.search(board)
         # return the best move
         return move
+    def get_next_move(self, board):
+        return self.get_move(board)
 
 class MCTSOwenBtfSimple:
     def __init__(self):
@@ -167,6 +225,8 @@ class MCTSOwenBtfSimple:
         move = self.searcher.search(board)
         # return the best move
         return move
+    def get_next_move(self, board):
+        return self.get_move(board)
     
 class MCTSOwenBtfSimpleExpand:
     def __init__(self):
@@ -182,6 +242,8 @@ class MCTSOwenBtfSimpleExpand:
         move = self.searcher.search(board)
         # return the best move
         return move
+    def get_next_move(self, board):
+        return self.get_move(board)
 
 
 
@@ -200,6 +262,8 @@ class ChessBotAgentBtfSingleInput:
         move = self.bot.move(board)
         # return the best move
         return move
+    def get_next_move(self, board):
+        return self.get_move(board)
 
 class ChessBotAgentBtfSimpleInput:
     def __init__(self):
@@ -213,6 +277,8 @@ class ChessBotAgentBtfSimpleInput:
         move = self.bot.move(board)
         # return the best move
         return move
+    def get_next_move(self, board):
+        return self.get_move(board)
     
 class ChessBotAgentBtfTripleInput:
     def __init__(self):
@@ -226,6 +292,8 @@ class ChessBotAgentBtfTripleInput:
         move = self.bot.move(board)
         # return the best move
         return move
+    def get_next_move(self, board):
+        return self.get_move(board)
     
 
 class ChessBotAgentOwenSingleInput:
@@ -240,6 +308,8 @@ class ChessBotAgentOwenSingleInput:
         move = self.bot.move(board)
         # return the best move
         return move
+    def get_next_move(self, board):
+        return self.get_move(board)
 
 class ChessBotAgentOwenSimpleInput:
     def __init__(self):
@@ -253,6 +323,8 @@ class ChessBotAgentOwenSimpleInput:
         move = self.bot.move(board)
         # return the best move
         return move
+    def get_next_move(self, board):
+        return self.get_move(board)
     
 class ChessBotAgentOwenTripleInput:
     def __init__(self):
@@ -266,6 +338,8 @@ class ChessBotAgentOwenTripleInput:
         move = self.bot.move(board)
         # return the best move
         return move
+    def get_next_move(self, board):
+        return self.get_move(board)
 
 
 ###########################################################################################
@@ -284,6 +358,8 @@ class RandomAgent:
         pass
     def get_move(self, board):
         return random.choice(list(board.legal_moves))
+    def get_next_move(self, board):
+        return self.get_move(board)
     
 # minimax agent : copilot directed from ??? github.com/kevinhughes27/TensorKart/blob/master/tensorkart/agents.py
 class MinimaxAgent:
@@ -294,6 +370,8 @@ class MinimaxAgent:
         pass
     def get_move(self, board):
         return minimax(board, self.depth)[1]
+    def get_next_move(self, board):
+        return self.get_move(board)
     
 # minimax agent with alpha beta pruning
 class MinimaxABAgent:
@@ -304,6 +382,8 @@ class MinimaxABAgent:
         pass
     def get_move(self, board):
         return minimax(board, self.depth, True)[1]
+    def get_next_move(self, board):
+        return self.get_move(board)
     
 
 # minimax function
@@ -388,6 +468,7 @@ def minimax(board, depth, alpha_beta = False):
             board.pop()
         # return the best score and best move
         return (best_score, best_move)
+
     
 # score the board
 # the score is the difference between the number of white pieces and the number of black pieces

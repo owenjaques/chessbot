@@ -8,7 +8,7 @@ import typing
 import random
 #This line should be replaced with whatever model we want to test.
 #The model must impliment a function called get_next_move().
-import a_really_bad_chess_engine
+#import a_really_bad_chess_engine
 
 
 #move must be guaranteed to be a legal move
@@ -54,7 +54,29 @@ def calculate_elo( winner, loser, k = 32) -> typing.Tuple[int, int]:
     new_loser = loser + k * (0 - expected_loser)
     return (new_winner, new_loser)
 
+def run_elo_evaluation(our_agent, stockfish_opponent):
+    #change to wherever you've installed stockfish
+    games_won = []
+    #starting elo
+    our_elo = 1500
+    #list of elos which will set the stokcfish engine's elo for each game
+    elos = list(range(1350, 2851, 20))
+    random.shuffle(elos)
+
+    for elo in elos:
+        stockfish_opponent.update_engine_parameters({"UCI_Elo" : elo})
+        winner = get_winner_of_game(stockfish_opponent, our_agent).winner
+        games_won += [(elo, not winner)]
+        if winner:
+            elo, our_elo = calculate_elo(elo, our_elo)
+        else:
+            our_elo, elo = calculate_elo(our_elo, elo)
+
+    print(games_won)
+    print(our_elo)
+
 def main():
+    """
     #change to wherever you've installed stockfish
     stockfish = Stockfish(path = "/usr/local/bin/stockfish", parameters = {"UCI_LimitStrength" : "true"})
     games_won = []
@@ -75,6 +97,8 @@ def main():
 
     print(games_won)
     print(our_elo)
+    """
+    print("hello :)")
 
 if __name__ == "__main__":
     main()
