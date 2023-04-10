@@ -60,13 +60,13 @@ def calculate_elo( winner, loser, k = 32) -> typing.Tuple[int, int]:
     new_loser = loser + k * (0 - expected_loser)
     return (new_winner, new_loser)
 
-def run_elo_evaluation(our_agent, stockfish_opponent, display_board = False):
+def run_elo_evaluation(our_agent, stockfish_opponent, display_board):
     #change to wherever you've installed stockfish
     games_won = []
     #starting elo
     our_elo = 1500
     #list of elos which will set the stokcfish engine's elo for each game
-    elos = list(range(1350, 1501, 50))
+    elos = list(range(1000, 1501, 50))
     random.shuffle(elos)
 
     for elo in elos:
@@ -80,6 +80,7 @@ def run_elo_evaluation(our_agent, stockfish_opponent, display_board = False):
 
     print(games_won)
     print(our_elo)
+    return our_elo
 
 def main():
     """
