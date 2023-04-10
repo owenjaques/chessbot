@@ -113,8 +113,9 @@ class MCTS():
                     value = self.evaluate(node)
                 else:
                     if self.value != None:
+                        value = min(self.nodes[child].value for child in self.nodes[node].children)
                         #value = self.nodes[node].value
-                        value = self.evaluate(node)
+                        #value = self.evaluate(node)
                     else:
                         # unsure about this... need to test more
                         if self.heap_mark:
@@ -178,7 +179,7 @@ class MCTS():
                 child.set_terminal(True)
                 self.nodes[node].add_child(child.board.fen())
                 self.nodes[child.board.fen()] = child
-                if abs(child.value) != 1:
+                if not board.is_game_over(claim_draw=True):
                     self.nodes[node].terminal = False
                     if self.heap_mark:
                         heapq.heappush(self.leaf_heapq, child)
@@ -221,6 +222,7 @@ class MCTS():
         if abs(b_val) == 1:
             return b_val
         if self.value == None and self.heap_mark:
+            #return max(-1, min((self.rollout(board) + b_val)/1.79, 1))
             return self.rollout(board) + b_val
         elif self.value == None and not self.heap_mark:
             return self.rollout(board)

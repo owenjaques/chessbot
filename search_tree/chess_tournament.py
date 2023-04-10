@@ -31,6 +31,7 @@ class TournamentResults:
     def __init__(self, agents):
         self.agents = agents
         self.results = {}
+        self.failed_games = {}
         for agent in agents:
             self.results[agent.name] = 0
             # store the results of each agent against each other agent
@@ -68,12 +69,26 @@ class ChessTournament():
                 agent1.initialize(chess.WHITE)
                 agent2.initialize(chess.BLACK)
                 # play a game between the two agents
-                game_results = self.play_game(agent1, agent2)
-                # update the tournament results
-                tournament_results.results[agent1.name] += game_results.results[agent1.name]
-                tournament_results.results[agent2.name] += game_results.results[agent2.name]
-                tournament_results.results[agent1.name + " " + agent2.name] += game_results.results[agent1.name]
-                tournament_results.results[agent2.name + " " + agent1.name] += game_results.results[agent2.name]
+                try:
+                    game_results = self.play_game(agent1, agent2)
+                    # update the tournament results
+                    tournament_results.results[agent1.name] += game_results.results[agent1.name]
+                    tournament_results.results[agent2.name] += game_results.results[agent2.name]
+                    tournament_results.results[agent1.name + " " + agent2.name] += game_results.results[agent1.name]
+                    tournament_results.results[agent2.name + " " + agent1.name] += game_results.results[agent2.name]
+                    # save the game results
+                    self.save_progress(tournament_results)
+                except:
+                    print("Game failed!, moving onto next game")
+                    if agent1.name in tournament_results.failed_games:
+                        tournament_results.failed_games[agent1.name] += 1
+                    else:
+                        tournament_results.failed_games[agent1.name] = 1
+                    if agent2.name in tournament_results.failed_games:
+                        tournament_results.failed_games[agent2.name] += 1
+                    else:
+                        tournament_results.failed_games[agent2.name] = 1
+                    continue
 
         print("Tournament over!")
 
@@ -129,6 +144,28 @@ class ChessTournament():
 
         # return the game results
         return game_results
+    
+    # save progress
+    def save_progress(self, tournament_results):
+        # create a file name
+        file_name = "tournament_results_" + datetime.datetime.now().strftime("%Y%m%d") + ".txt"
+        # open the file
+        file = open(file_name, "w")
+        # loop through the agents
+        for agent in tournament_results.agents:
+            # write the agent name and win percentage to the file
+            file.write(agent.name + ": " + str(tournament_results.results[agent.name] / self.games_per_agent) + "    ")
+
+        for agent in tournament_results.failed_games:
+            file.write(agent.name + ": " + str(tournament_results.failed_games[agent.name]) + "    ")
+
+        # print the agaent against agent results
+        for agent in tournament_results.agents:
+            for agent2 in tournament_results.agents:
+                file.write(agent.name + " " + agent2.name + ": " + str(tournament_results.results[agent.name + " " + agent2.name] / self.games_per_round) + "    ")
+
+        # close the file
+        file.close()
 
     # print the tournament results
     def print_tournament_results(self, tournament_results):

@@ -140,7 +140,7 @@ class MCTSOwenBtfSimple:
     
 class MCTSOwenBtfSimpleExpand:
     def __init__(self):
-        self.name = "MCTS Owen Btf Simple Input"
+        self.name = "MCTS Owen Btf Simple Input Expand mode"
         self.model = keras.models.load_model('bin/btf/simple_input_model/model')
         self.model_two = keras.models.load_model('bin/owen/simple_input_model/model')
         self.searcher = MCTS(max_time = 30, use_heap=True)
