@@ -55,6 +55,9 @@ class ChessTournament():
     def run_tournament(self):
         # create a tournament results object
         tournament_results = TournamentResults(self.agents)
+        # load the tournament results if they exist so that the tournament can be resumed
+        self.load_progress(tournament_results)
+    
         # loop through the rounds
         for round in range(self.rounds):
             # loop through the games per round
@@ -144,6 +147,28 @@ class ChessTournament():
 
         # return the game results
         return game_results
+    
+    # load progress
+    def load_progress(self, tournament_results):
+        # create a file name
+        file_name = "tournament_results_" + datetime.datetime.now().strftime("%Y%m%d") + ".txt"
+        # check if the file exists
+        if os.path.isfile(file_name):
+            # open the file
+            file = open(file_name, "r")
+            # read the file
+            lines = file.readlines()
+            # loop through the lines
+            for line in lines:
+                # split the line
+                split_line = line.split(": ")
+                # check if the line is an agent name
+                if split_line[0] in tournament_results.agents:
+                    # update the agent win percentage
+                    tournament_results.results[split_line[0]] = float(split_line[1])
+                else:
+                    # update the agent against agent win percentage
+                    tournament_results.results[split_line[0]] = float(split_line[1])
     
     # save progress
     def save_progress(self, tournament_results):
