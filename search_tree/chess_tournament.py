@@ -228,7 +228,7 @@ class ChessTournament():
                 # check if the line is an agent result
                 if split_line[1] == "wins:":
                     # add the agent result to the tournament results
-                    tournament_results.results[split_line[0]] = int(split_line[2])    
+                    tournament_results.results[split_line[0]] = float(split_line[2])
                 if split_line[1] == "games_played:":
                     # add the agent result to the tournament results
                     tournament_results.results[split_line[0] + " games played"] = int(split_line[2])
@@ -237,10 +237,10 @@ class ChessTournament():
                     tournament_results.failed_games[split_line[0]] = int(split_line[2])
                 if split_line[1] == "elo:": 
                     # add the agent result to the tournament results
-                    tournament_results.elo_ratings[split_line[0]] = int(split_line[2])
+                    tournament_results.elo[split_line[0]] = int(round(float(split_line[2])))
                 if split_line[1] == "wins_against":
                     # add the agent vs agent result to the tournament results
-                    tournament_results.results[split_line[0] + " " + split_line[2]] = int(split_line[4])
+                    tournament_results.results[split_line[0] + " " + split_line[2]] = float(split_line[4])
                 if split_line[1] == "games_against":
                     # add the agent vs agent result to the tournament results
                     tournament_results.results[split_line[0] + " " + split_line[2] + " games played"] = int(split_line[4])

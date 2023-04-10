@@ -1,12 +1,48 @@
-BTFSimpleAgent wins: 0.5 
-BTFSimpleAgent games_played: 1 
+MCTS BTF Single Input wins: 0 
+MCTS BTF Single Input games_played: 0 
+MCTS BTF Single Input failed_games: 0 
+MCTS BTF Single Input elo: 1000 
+MCTS BTF Simple Input wins: 0 
+MCTS BTF Simple Input games_played: 0 
+MCTS BTF Simple Input failed_games: 0 
+MCTS BTF Simple Input elo: 1000 
+MCTS Owen Single Input wins: 0 
+MCTS Owen Single Input games_played: 0 
+MCTS Owen Single Input failed_games: 0 
+MCTS Owen Single Input elo: 1000 
+MCTS Owen Simple Input wins: 0 
+MCTS Owen Simple Input games_played: 0 
+MCTS Owen Simple Input failed_games: 0 
+MCTS Owen Simple Input elo: 1000 
+MCTS Owen Btf Simple Input wins: 0 
+MCTS Owen Btf Simple Input games_played: 0 
+MCTS Owen Btf Simple Input failed_games: 0 
+MCTS Owen Btf Simple Input elo: 1000 
+MCTS Owen Btf Simple Input Expand mode wins: 0 
+MCTS Owen Btf Simple Input Expand mode games_played: 0 
+MCTS Owen Btf Simple Input Expand mode failed_games: 0 
+MCTS Owen Btf Simple Input Expand mode elo: 1000 
+BTFSimpleAgent wins: 1.5 
+BTFSimpleAgent games_played: 2 
 BTFSimpleAgent failed_games: 0 
-BTFSimpleAgent elo: 1000.0 
+BTFSimpleAgent elo: 1016.0 
 BTFSimpleAgent wins_against OWENSimpleAgent : 0.5 
 BTFSimpleAgent games_against OWENSimpleAgent : 1 
+BTFSimpleAgent wins_against OWENSingleAgent : 1 
+BTFSimpleAgent games_against OWENSingleAgent : 1 
+BTFSingleAgent wins: 0 
+BTFSingleAgent games_played: 0 
+BTFSingleAgent failed_games: 0 
+BTFSingleAgent elo: 1000 
 OWENSimpleAgent wins: 0.5 
 OWENSimpleAgent games_played: 1 
 OWENSimpleAgent failed_games: 0 
-OWENSimpleAgent elo: 1000.0 
+OWENSimpleAgent elo: 1000 
 OWENSimpleAgent wins_against BTFSimpleAgent : 0.5 
 OWENSimpleAgent games_against BTFSimpleAgent : 1 
+OWENSingleAgent wins: 0 
+OWENSingleAgent games_played: 1 
+OWENSingleAgent failed_games: 0 
+OWENSingleAgent elo: 984.0 
+OWENSingleAgent wins_against BTFSimpleAgent : 0 
+OWENSingleAgent games_against BTFSimpleAgent : 1 
