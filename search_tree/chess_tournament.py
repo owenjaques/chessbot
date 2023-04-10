@@ -32,6 +32,7 @@ class TournamentResults:
         self.agents = agents
         self.results = {}
         self.failed_games = {}
+        self.elo = {}
         for agent in agents:
             self.results[agent.name] = 0
             # store the results of each agent against each other agent
@@ -57,6 +58,11 @@ class ChessTournament():
         tournament_results = TournamentResults(self.agents)
         # load the tournament results if they exist so that the tournament can be resumed
         self.load_progress(tournament_results)
+
+        # if player doesn't have elo rating, give them a default rating of 1000
+        for agent in self.agents:
+            if agent.name not in tournament_results.elo:
+                tournament_results.elo[agent.name] = 1000
     
         # loop through the rounds
         for round in range(self.rounds):
@@ -74,6 +80,9 @@ class ChessTournament():
                 # play a game between the two agents
                 try:
                     game_results = self.play_game(agent1, agent2)
+                    # calculate ELO rating and update the results
+                    
+
                     # update the tournament results
                     tournament_results.results[agent1.name] += game_results.results[agent1.name]
                     tournament_results.results[agent2.name] += game_results.results[agent2.name]
@@ -85,7 +94,8 @@ class ChessTournament():
                     # add number of games played for each agent to keep the win percentage accurate
                     tournament_results.results[agent1.name + " games played"] += 1
                     tournament_results.results[agent2.name + " games played"] += 1
-                    # save the game results
+                    # update the elo rating
+                    self.calculate_elo_rating(tournament_results, agent1, agent2, game_results)
                     self.save_progress(tournament_results)
                 except:
                     print("Game failed!, moving onto next game")
@@ -186,6 +196,10 @@ class ChessTournament():
                 elif split_line[1] == "games_against":
                     # update the tournament results
                     tournament_results.results[split_line[0] + " " + split_line[2] + " games played"] = int(split_line[4])
+                # check if the line is an elo rating
+                elif split_line[1] == "elo:":
+                    # update the tournament results
+                    tournament_results.elo[split_line[0]] = float(split_line[2])
             # close the file
             file.close()
         # return the tournament results
@@ -204,6 +218,8 @@ class ChessTournament():
             file.write(agent.name + " wins: " + str(tournament_results.results[agent.name]) + "\n")
             file.write(agent.name + " games_played: " + str(tournament_results.results[agent.name + " games played"]) + "\n")
             file.write(agent.name + " failed_games: " + str(tournament_results.failed_games[agent.name]) + "\n")
+            # save elo rating
+            file.write(agent.name + " elo: " + str(tournament_results.elo[agent.name]) + "\n")
             # loop through the agents
             for agent2 in tournament_results.agents:
                 # write the agent against agent results to the file
@@ -259,7 +275,32 @@ class ChessTournament():
         plt.show()
 
 
+    # calculate the ELO rating of the agents in the tournament after a game
+    def calculate_elo_rating(self, tournament_results, agent1, agent2, result):
+        # get the ELO rating of the agents
+        agent1_elo = tournament_results.elo_rating[agent1.name]
+        agent2_elo = tournament_results.elo_rating[agent2.name]
+        # calculate the expected score of the agents
+        agent1_expected_score = 1 / (1 + 10 ** ((agent2_elo - agent1_elo) / 400))
+        agent2_expected_score = 1 / (1 + 10 ** ((agent1_elo - agent2_elo) / 400))
+        # calculate the actual score of the agents
+        agent1_actual_score = 0
+        agent2_actual_score = 0
+        if result == 1:
+            agent1_actual_score = 1
+        elif result == -1:
+            agent2_actual_score = 1
+        else:
+            agent1_actual_score = 0.5
+            agent2_actual_score = 0.5
+        # calculate the new ELO rating of the agents
+        agent1_new_elo = agent1_elo + 32 * (agent1_actual_score - agent1_expected_score)
+        agent2_new_elo = agent2_elo + 32 * (agent2_actual_score - agent2_expected_score)
+        # update the ELO rating of the agents
+        tournament_results.elo_rating[agent1.name] = agent1_new_elo
+        tournament_results.elo_rating[agent2.name] = agent2_new_elo
 
+        return tournament_results
 
 def main():
     # set the number of rounds
