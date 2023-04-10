@@ -18,15 +18,17 @@ import os
 import pickle
 import queue
 import heapq
-import sys 
-sys.path.append('..')
+import sys
+
 
 import contextlib
 
 from collections import defaultdict
 
-from neural_networks.chessbot.modelinput import ModelInput
+sys.path.append('..')
+
 from neural_networks.chessbot.chessbot import ChessBot
+from neural_networks.chessbot.modelinput import ModelInput
 
 from search_tree.experiments.CNN.board_processing import Boardprocessing
 
@@ -34,7 +36,7 @@ from search_tree.experiments.CNN.board_processing import Boardprocessing
 # have pretty heavily deviated from the original MCTS implementation
 # is more of a UCT implementation now mixed with a few other ideas
 class MCTS():
-    def __init__(self, max_time=10, num_simulations=2500, player='white', max_depth=13, policy_nn=None, value_nn=None, value_nn_2=None, model_input=None, use_heap=False, expand_mode=False):
+    def __init__(self, max_time=10, num_simulations=1500, player='white', max_depth=13, policy_nn=None, value_nn=None, value_nn_2=None, model_input=None, use_heap=False, expand_mode=False):
         self.board = chess.Board()
         self.player = player
         self.time_limit = max_time
@@ -108,11 +110,11 @@ class MCTS():
                 board = chess.Board(self.nodes[node].board.fen())
                 # left as a placeholder for now to test
                 if self.expand_mode:
-                    value = self.evaluate(node)
+                    value = -self.evaluate(node)
                 else:
                     if self.value != None:
-                        #value = self.nodes[node].value
-                        value = self.evaluate(node)
+                        value = self.nodes[node].value
+                        #value = -self.evaluate(node)
                     else:
                         # unsure about this... need to test more
                         if self.heap_mark:
@@ -242,8 +244,8 @@ class MCTS():
             for square in chess.SQUARES:
                 position += len(board.attackers(chess.WHITE, square))*0.1
                 position += len(board.attackers(chess.BLACK, square))*-0.1
-                position += len(board.defenders(chess.WHITE, square))*0.17
-                position += len(board.defenders(chess.BLACK, square))*-0.17
+                position += len(board.defenders(chess.WHITE, square))*0.135
+                position += len(board.defenders(chess.BLACK, square))*-0.135
 
             # add bonus for center control
             position += len(board.attackers(chess.WHITE, chess.E4)) * 0.1
@@ -277,6 +279,7 @@ class MCTS():
         sims = self.num_simulations
         depth = self.max_depth
 
+        """
         if self.move_count < 5:
             sims = int(self.num_simulations/15)
             depth = int(self.max_depth*15)
@@ -286,9 +289,10 @@ class MCTS():
         elif self.move_count < 15:
             sims = int(self.num_simulations/5)
             depth = int(self.max_depth*5)
+        """
 
         # sample up to depth
-        if self.value != None:
+        if self.value != None and not self.expand_mode :
             for _ in range(sims):
                 sim_board = chess.Board(board.fen())
                 for i in range( random.randint(0, depth) ):
@@ -346,8 +350,8 @@ class MCTS():
         # backpropagate the value of the board
         if node == None or self.nodes[node] == None:
             return
-        self.nodes[node].value = (self.nodes[node].value*self.nodes[node].visits - value)/(self.nodes[node].visits + 1)
         self.nodes[node].add_visit(1)
+        self.nodes[node].value = (self.nodes[node].value*self.nodes[node].visits - value)/(self.nodes[node].visits + 1)
         if self.nodes[node].parent != None:
             self.backpropagate(self.nodes[node].parent, value)
         
