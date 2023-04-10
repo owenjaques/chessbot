@@ -36,7 +36,7 @@ from search_tree.experiments.CNN.board_processing import Boardprocessing
 # have pretty heavily deviated from the original MCTS implementation
 # is more of a UCT implementation now mixed with a few other ideas
 class MCTS():
-    def __init__(self, max_time=10, num_simulations=1500, player='white', max_depth=13, policy_nn=None, value_nn=None, value_nn_2=None, model_input=None, use_heap=False, expand_mode=False):
+    def __init__(self, max_time=10, num_simulations=2500, player='white', max_depth=25, policy_nn=None, value_nn=None, value_nn_2=None, model_input=None, use_heap=False, expand_mode=False):
         self.board = chess.Board()
         self.player = player
         self.time_limit = max_time
@@ -113,14 +113,17 @@ class MCTS():
                     value = self.evaluate(node)
                 else:
                     if self.value != None:
-                        value = self.nodes[node].value
-                        #value = -self.evaluate(node)
+                        #value = self.nodes[node].value
+                        value = self.evaluate(node)
                     else:
                         # unsure about this... need to test more
                         if self.heap_mark:
-                            value = sum(self.nodes[child].value for child in self.nodes[node].children)
+                            #value = sum(self.nodes[child].value for child in self.nodes[node].children)
+                            value = self.evaluate(node)
+                            #value = self.rollout(node)
                         else:
-                            value = sum(self.nodes[child].value for child in self.nodes[node].children)/len(self.nodes[node].children)
+                            #value = sum(self.nodes[child].value for child in self.nodes[node].children)/len(self.nodes[node].children)
+                            value = self.rollout(node)
                 self.backpropagate(node, value)
 
         # return the best move
@@ -244,8 +247,8 @@ class MCTS():
             for square in chess.SQUARES:
                 position += len(board.attackers(chess.WHITE, square))*0.1
                 position += len(board.attackers(chess.BLACK, square))*-0.1
-                position += len(board.defenders(chess.WHITE, square))*0.135
-                position += len(board.defenders(chess.BLACK, square))*-0.135
+                position += len(board.defenders(chess.WHITE, square))*0.1
+                position += len(board.defenders(chess.BLACK, square))*-0.1
 
             # add bonus for center control
             position += len(board.attackers(chess.WHITE, chess.E4)) * 0.1
@@ -351,9 +354,9 @@ class MCTS():
         if node == None or self.nodes[node] == None:
             return
         self.nodes[node].add_visit(1)
-        self.nodes[node].value = (self.nodes[node].value*self.nodes[node].visits - value)/(self.nodes[node].visits + 1)
+        self.nodes[node].value = (self.nodes[node].value*self.nodes[node].visits + value)/(self.nodes[node].visits + 1)
         if self.nodes[node].parent != None:
-            self.backpropagate(self.nodes[node].parent, value)
+            self.backpropagate(self.nodes[node].parent, -value)
         
 
     # returns - if good for parent, + if good for child (next to play)

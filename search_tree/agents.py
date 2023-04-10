@@ -137,6 +137,21 @@ class MCTSOwenBtfSimple:
         move = self.searcher.search(board)
         # return the best move
         return move
+    
+class MCTSOwenBtfSimpleExpand:
+    def __init__(self):
+        self.name = "MCTS Owen Btf Simple Input"
+        self.model = keras.models.load_model('bin/btf/simple_input_model/model')
+        self.model_two = keras.models.load_model('bin/owen/simple_input_model/model')
+        self.searcher = MCTS(max_time = 30, use_heap=True)
+    def initialize(self, color):
+        self.searcher = MCTS(max_time = 30, value_nn=self.model, value_nn_2=self.model_two, model_input='simple', use_heap=False, expand_mode=True)
+        pass
+    def get_move(self, board):
+        # get the best move
+        move = self.searcher.search(board)
+        # return the best move
+        return move
 
 
 
