@@ -58,37 +58,86 @@ class MCTSHeapAgent2000and15:
 ###########################################################################################
 ###################################### NN AGENTS ##########################################
 
-
+class ChessBotAgentBtfSingleInput:
+    def __init__(self):
+        self.name = "BTFSingleAgent"
+        self.model = keras.models.load_model('bin/btf/single_input_model/model')
+        self.bot = ChessBot(self.model, ModelInput('positions'), chess.WHITE, exploration_rate=0.0)
+    def initialize(self, color):
+        self.bot = ChessBot(self.model, ModelInput('positions'), color, exploration_rate=0.0)
+    def get_move(self, board):
+        # get the best move
+        move = self.bot.move(board)
+        # return the best move
+        return move
 
 class ChessBotAgentBtfSimpleInput:
     def __init__(self):
         self.name = "BTFSimpleAgent"
         self.model = keras.models.load_model('bin/btf/simple_input_model/model')
         self.bot = ChessBot(self.model, ModelInput('simple'), chess.WHITE, exploration_rate=0.0)
-    def initialize(self):
-        pass
+    def initialize(self, color):
+        self.bot = ChessBot(self.model, ModelInput('simple'), color, exploration_rate=0.0)
     def get_move(self, board):
         # get the best move
         move = self.bot.move(board)
         # return the best move
         return move
+    
+class ChessBotAgentBtfTripleInput:
+    def __init__(self):
+        self.name = "BTFTripleAgent"
+        self.model = keras.models.load_model('bin/btf/triple_input_model/model')
+        self.bot = ChessBot(self.model, ModelInput('all'), chess.WHITE, exploration_rate=0.0)
+    def initialize(self, color):
+        self.bot = ChessBot(self.model, ModelInput('all'), color, exploration_rate=0.0)
+    def get_move(self, board):
+        # get the best move
+        move = self.bot.move(board)
+        # return the best move
+        return move
+    
 
-
-
-
+class ChessBotAgentOwenSingleInput:
+    def __init__(self):
+        self.name = "OWENSingleAgent"
+        self.model = keras.models.load_model('bin/owen/single_input_model/model')
+        self.bot = ChessBot(self.model, ModelInput('positions'), chess.WHITE, exploration_rate=0.0)
+    def initialize(self, color):
+        self.bot = ChessBot(self.model, ModelInput('positions'), color, exploration_rate=0.0)
+    def get_move(self, board):
+        # get the best move
+        move = self.bot.move(board)
+        # return the best move
+        return move
 
 class ChessBotAgentOwenSimpleInput:
     def __init__(self):
         self.name = "OWENSimpleAgent"
         self.model = keras.models.load_model('bin/owen/simple_input_model/model')
         self.bot = ChessBot(self.model, ModelInput('simple'), chess.WHITE, exploration_rate=0.0)
-    def initialize(self):
-        pass
+    def initialize(self, color):
+        self.bot = ChessBot(self.model, ModelInput('simple'), color, exploration_rate=0.0)
     def get_move(self, board):
         # get the best move
         move = self.bot.move(board)
         # return the best move
         return move
+    
+class ChessBotAgentOwenTripleInput:
+    def __init__(self):
+        self.name = "OWENTripleAgent"
+        self.model = keras.models.load_model('bin/owen/triple_input_model/model')
+        self.bot = ChessBot(self.model, ModelInput('all'), chess.WHITE, exploration_rate=0.0)
+    def initialize(self, color):
+        self.bot = ChessBot(self.model, ModelInput('all'), chess.WHITE, exploration_rate=0.0)
+    def get_move(self, board):
+        # get the best move
+        move = self.bot.move(board)
+        # return the best move
+        return move
+
+
 
 
 
