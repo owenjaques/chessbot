@@ -63,9 +63,9 @@ class MCTSHeapAgent:
 class MCTSHeapAgent2000and15:
     def __init__(self):
         self.name = "MCTS Heap Agent time 60 num_simulations 2000 max_depth 15"
-        self.searcher = MCTS(max_time = 60, use_heap=True)
+        self.searcher = MCTS(max_time = 30, use_heap=True)
     def initialize(self, color):
-        self.searcher = MCTS(max_time = 60, num_simulations=2000, max_depth=15, use_heap=True)
+        self.searcher = MCTS(max_time = 30, num_simulations=2000, max_depth=15, use_heap=True)
         pass
     def get_move(self, board):
         # get the best move
@@ -79,9 +79,9 @@ class MCTSHeapAgent2000and15:
 class MCTSAgent:
     def __init__(self):
         self.name = "MCTS Heap Agent time 30 num_simulations 2000 max_depth 25"
-        self.searcher = MCTS(max_time = 60, use_heap=True)
+        self.searcher = MCTS(max_time = 30, use_heap=True)
     def initialize(self,color):
-        self.searcher = MCTS(max_time = 60, num_simulations=2000, max_depth=25, use_heap=False)
+        self.searcher = MCTS(max_time = 30, num_simulations=2000, max_depth=25, use_heap=False)
         pass
     def get_move(self, board):
         # get the best move
@@ -99,9 +99,9 @@ class MCTSBtfSimple:
     def __init__(self):
         self.name = "MCTS BTF Simple Input"
         self.model = keras.models.load_model('bin/btf/simple_input_model/model')
-        self.searcher = MCTS(max_time = 60, use_heap=True)
+        self.searcher = MCTS(max_time = 30, use_heap=True)
     def initialize(self,color):
-        self.searcher = MCTS(max_time = 60, value_nn=self.model, model_input='simple', use_heap=False)
+        self.searcher = MCTS(max_time = 30, value_nn=self.model, model_input='simple', use_heap=False)
         pass
     def get_move(self, board):
         # get the best move
@@ -113,9 +113,9 @@ class MCTSOwenSimple:
     def __init__(self):
         self.name = "MCTS Owen Simple Input"
         self.model = keras.models.load_model('bin/owen/simple_input_model/model')
-        self.searcher = MCTS(max_time = 60, use_heap=True)
+        self.searcher = MCTS(max_time = 30, use_heap=True)
     def initialize(self,color):
-        self.searcher = MCTS(max_time = 60, value_nn=self.model, model_input='simple', use_heap=False)
+        self.searcher = MCTS(max_time = 30, value_nn=self.model, model_input='simple', use_heap=False)
         pass
     def get_move(self, board):
         # get the best move
@@ -128,9 +128,9 @@ class MCTSOwenBtfSimple:
         self.name = "MCTS Owen Btf Simple Input"
         self.model = keras.models.load_model('bin/btf/simple_input_model/model')
         self.model_two = keras.models.load_model('bin/owen/simple_input_model/model')
-        self.searcher = MCTS(max_time = 60, use_heap=True)
+        self.searcher = MCTS(max_time = 30, use_heap=True)
     def initialize(self, color):
-        self.searcher = MCTS(max_time = 60, value_nn=self.model, value_nn_2=self.model_two, model_input='simple', use_heap=False)
+        self.searcher = MCTS(max_time = 30, value_nn=self.model, value_nn_2=self.model_two, model_input='simple', use_heap=False)
         pass
     def get_move(self, board):
         # get the best move
