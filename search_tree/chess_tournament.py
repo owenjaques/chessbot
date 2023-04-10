@@ -79,6 +79,9 @@ class ChessTournament():
                     tournament_results.results[agent2.name] += game_results.results[agent2.name]
                     tournament_results.results[agent1.name + " " + agent2.name] += game_results.results[agent1.name]
                     tournament_results.results[agent2.name + " " + agent1.name] += game_results.results[agent2.name]
+                    # add number of games played for each agent to keep the win percentage accurate
+                    tournament_results.results[agent1.name + " games played"] += 1
+                    tournament_results.results[agent2.name + " games played"] += 1
                     # save the game results
                     self.save_progress(tournament_results)
                 except:
@@ -98,8 +101,8 @@ class ChessTournament():
         # loop through the agents
         for agent in self.agents:
             # calculate the win percentage
-            win_percentage = tournament_results.results[agent.name] / (self.games_per_agent * self.rounds)
-            # print the results
+            win_percentage = tournament_results.results[agent.name] / tournament_results.results[agent.name + " games played"]
+            # print the win percentage
             print(agent.name + " win percentage: " + str(win_percentage))
 
         # return the tournament results
@@ -158,17 +161,31 @@ class ChessTournament():
             file = open(file_name, "r")
             # read the file
             lines = file.readlines()
-            # loop through the lines
+            # loop through the lines and load the tournament results as they are saved
             for line in lines:
                 # split the line
                 split_line = line.split(": ")
-                # check if the line is an agent name
-                if split_line[0] in tournament_results.agents:
-                    # update the agent win percentage
+                # check if the line is a win percentage
+                if len(split_line) == 2:
+                    # update the tournament results
                     tournament_results.results[split_line[0]] = float(split_line[1])
-                else:
-                    # update the agent against agent win percentage
-                    tournament_results.results[split_line[0]] = float(split_line[1])
+                # check if the line is a number of wins
+                elif split_line[0][-5:] == " wins":
+                    # update the tournament results
+                    tournament_results.results[split_line[0][:-6]] = int(split_line[1])
+                # check if the line is a number of games played
+                elif split_line[0][-13:] == " games played":
+                    # update the tournament results
+                    tournament_results.results[split_line[0][:-14] + " games played"] = int(split_line[1])
+                elif split_line[0][-12:] == " failed games":
+                    # update the tournament results
+                    tournament_results.failed_games[split_line[0][:-13]] = int(split_line[1])
+
+            # close the file
+            file.close()
+        # return the tournament results
+        return tournament_results
+    
     
     # save progress
     def save_progress(self, tournament_results):
@@ -178,16 +195,16 @@ class ChessTournament():
         file = open(file_name, "w")
         # loop through the agents
         for agent in tournament_results.agents:
-            # write the agent name and win percentage to the file
-            file.write(agent.name + ": " + str(tournament_results.results[agent.name] / self.games_per_agent) + "    ")
-
-        for agent in tournament_results.failed_games:
-            file.write(agent.name + ": " + str(tournament_results.failed_games[agent.name]) + "    ")
-
-        # print the agaent against agent results
-        for agent in tournament_results.agents:
+            file.write(agent.name + ": " + str(tournament_results.results[agent.name] / tournament_results.results[agent.name + " games played"]) + "\n")
+            # save the number of wins
+            file.write(agent.name + " wins: " + str(tournament_results.results[agent.name]) + "\n")
+            # save the number of games played
+            file.write(agent.name + " games played: " + str(tournament_results.results[agent.name + " games played"]) + "\n")
+            # save the number of failed games
+            file.write(agent.name + " failed games: " + str(tournament_results.failed_games[agent.name]) + "\n")
+            # save the results against each agent
             for agent2 in tournament_results.agents:
-                file.write(agent.name + " " + agent2.name + ": " + str(tournament_results.results[agent.name + " " + agent2.name] / self.games_per_round) + "    ")
+                file.write(agent.name + " " + agent2.name + ": " + str(tournament_results.results[agent.name + " " + agent2.name]) + "\n")
 
         # close the file
         file.close()
@@ -205,17 +222,18 @@ class ChessTournament():
         file_name = "tournament_results_" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S") + ".txt"
         # open the file
         file = open(file_name, "w")
-        # loop through the agents
+        # loop through the agents and save the agent name and win percentage for the number of games played
         for agent in tournament_results.agents:
-            # write the agent name and win percentage to the file
-            file.write(agent.name + ": " + str(tournament_results.results[agent.name] / self.games_per_agent) + "    ")
-
-        # print the agaent against agent results
-        for agent in tournament_results.agents:
+            file.write(agent.name + ": " + str(tournament_results.results[agent.name] / tournament_results.results[agent.name + " games played"]) + "\n")
+            # save the number of wins
+            file.write(agent.name + " wins: " + str(tournament_results.results[agent.name]) + "\n")
+            # save the number of games played
+            file.write(agent.name + " games played: " + str(tournament_results.results[agent.name + " games played"]) + "\n")
+            # save the number of failed games
+            file.write(agent.name + " failed games: " + str(tournament_results.failed_games[agent.name]) + "\n")
+            # save the results against each agent
             for agent2 in tournament_results.agents:
-                file.write(agent.name + " " + agent2.name + ": " + str(tournament_results.results[agent.name + " " + agent2.name] / self.games_per_round) + "    ")
-
-
+                file.write(agent.name + " " + agent2.name + ": " + str(tournament_results.results[agent.name + " " + agent2.name]) + "\n")
         # close the file
         file.close()
 
