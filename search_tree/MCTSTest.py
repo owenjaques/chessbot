@@ -113,10 +113,7 @@ class MCTSTest():
                     value = self.evaluate(node)
                 else:
                     if self.value != None:
-                        #value = min(self.nodes[child].value for child in self.nodes[node].children)
                         value = -self.nodes[node].value
-                        #value = sum(self.nodes[child].value for child in self.nodes[node].children)/len(self.nodes[node].children)
-
                     else:
                         # unsure about this... need to test more
                         if self.heap_mark:
@@ -129,7 +126,7 @@ class MCTSTest():
                             #value = self.rollout(node)
                         else:
                             #value = sum(self.nodes[child].value for child in self.nodes[node].children)/len(self.nodes[node].children)
-                            value = self.rollout(node)
+                            value = -self.rollout(node)
                 self.backpropagate(node, value)
 
         # return the best move
@@ -145,7 +142,7 @@ class MCTSTest():
             min_value = math.inf
             best_child = None
             for child in self.nodes[node].children:
-                child_value = self.nodes[child].value / self.nodes[child].visits + math.sqrt(2 * math.log(self.nodes[node].visits) / (self.nodes[child].visits+1))
+                child_value = self.nodes[child].value / self.nodes[child].visits - math.sqrt(2 * math.log(self.nodes[node].visits) / (self.nodes[child].visits+1))
                 if child_value < min_value:
                     min_value = self.nodes[child].value
                     best_child = child

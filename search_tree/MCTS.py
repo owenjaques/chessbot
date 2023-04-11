@@ -113,14 +113,7 @@ class MCTS():
                     value = self.evaluate(node)
                 else:
                     if self.value != None:
-                        #value = min(self.nodes[child].value for child in self.nodes[node].children)
-                        try:
-                            value = min(self.nodes[child].value for child in self.nodes[node].children)
-                        except:
-                            value = self.evaluate(node)
-                        #value = self.evaluate(node)
-                        #value = sum(self.nodes[child].value for child in self.nodes[node].children)/len(self.nodes[node].children)
-
+                        value = -self.nodes[node].value
                     else:
                         # unsure about this... need to test more
                         if self.heap_mark:
