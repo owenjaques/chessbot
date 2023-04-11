@@ -62,6 +62,7 @@ class MCTS():
         self.root = board.fen()
         self.move_count += 1
         if self.root not in self.nodes:
+            self.nodes = {}
             self.nodes[self.root] = Node()
             self.nodes[self.root].set_board(self.root)
             self.nodes[self.root].add_visit(0)
@@ -119,7 +120,7 @@ class MCTS():
                 if board.is_stalemate() or board.is_insufficient_material() or board.can_claim_fifty_moves() or board.can_claim_threefold_repetition():
                     value = 1
                 elif board.result() == "1-0" or board.result() == "0-1" or board.is_checkmate():
-                    value = -2
+                    value = -1.5
                 if value == 0:
                     if self.expand_mode:
                         value = self.evaluate(node)

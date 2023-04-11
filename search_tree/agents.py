@@ -101,24 +101,11 @@ class MCTSAgentTEST:
 ###########################################################################################
 ##################################  The agent to beat  ####################################
 
-class StockfishAgent1000:
+class StockfishAgent1350:
     def __init__(self):
         self.path = os.getcwd()+"\stockfish_15.1_win_x64_avx2\stockfish-windows-2022-x86-64-avx2.exe"
         self.stockfish = Stockfish(self.path, parameters={"UCI_LimitStrength": True})
-        self.name = "Stockfish1000Elo"
-    def initialize(self, color):
-        pass
-    def get_move(self, board):
-        self.stockfish.set_fen_position(board.fen())
-        self.stockfish.update_engine_parameters({"UCI_Elo:": 1000})
-        move = self.stockfish.get_best_move()
-        return move
-    
-class StockfishAgent1350:
-    def __init__(self):
-        self.path = os.getcwd()+"/stockfish_15.1_win_x64_avx2/stockfish-windows-2022-x86-64-avx2.exe"
-        self.stockfish = Stockfish(self.path, parameters={"Threads": 1, "UCI_LimitStrength": True, "Skill Level": 20})
-        self.name = "Stockfish1350Elo"
+        self.name = "Stockfish1350"
     def initialize(self, color):
         pass
     def get_move(self, board):
@@ -126,17 +113,30 @@ class StockfishAgent1350:
         self.stockfish.update_engine_parameters({"UCI_Elo:": 1350})
         move = self.stockfish.get_best_move()
         return move
-
-class StockfishAgent2000:
+    
+class StockfishAgent1500:
     def __init__(self):
         self.path = os.getcwd()+"/stockfish_15.1_win_x64_avx2/stockfish-windows-2022-x86-64-avx2.exe"
         self.stockfish = Stockfish(self.path, parameters={"Threads": 1, "UCI_LimitStrength": True, "Skill Level": 20})
-        self.name = "Stockfish2000 Elo"
+        self.name = "Stockfish1500"
     def initialize(self, color):
         pass
     def get_move(self, board):
         self.stockfish.set_fen_position(board.fen())
-        self.stockfish.update_engine_parameters({"UCI_Elo:": 2000})
+        self.stockfish.update_engine_parameters({"UCI_Elo:": 1500})
+        move = self.stockfish.get_best_move()
+        return move
+
+class StockfishAgent1650:
+    def __init__(self):
+        self.path = os.getcwd()+"/stockfish_15.1_win_x64_avx2/stockfish-windows-2022-x86-64-avx2.exe"
+        self.stockfish = Stockfish(self.path, parameters={"Threads": 1, "UCI_LimitStrength": True, "Skill Level": 20})
+        self.name = "Stockfish1650"
+    def initialize(self, color):
+        pass
+    def get_move(self, board):
+        self.stockfish.set_fen_position(board.fen())
+        self.stockfish.update_engine_parameters({"UCI_Elo:": 1650})
         move = self.stockfish.get_best_move()
         return move
     
@@ -211,9 +211,9 @@ class MCTSBtfSingle:
     def __init__(self):
         self.name = "MCTSBTFSingleInput"
         self.model = keras.models.load_model('bin/btf/single_input_model/model')
-        self.searcher = MCTS(max_time = 30, use_heap=True)
+        self.searcher = MCTS(max_time = 60, use_heap=True)
     def initialize(self,color):
-        self.searcher = MCTS(max_time = 30, value_nn=self.model, model_input='positions', use_heap=False)
+        self.searcher = MCTS(max_time = 60, value_nn=self.model, model_input='positions', use_heap=False)
         pass
     def get_move(self, board):
         # get the best move
@@ -228,9 +228,9 @@ class MCTSBtfSimple:
     def __init__(self):
         self.name = "MCTSBTFSimpleInput"
         self.model = keras.models.load_model('bin/btf/simple_input_model/model')
-        self.searcher = MCTS(max_time = 30, use_heap=True)
+        self.searcher = MCTS(max_time = 60, use_heap=True)
     def initialize(self,color):
-        self.searcher = MCTS(max_time = 30, value_nn=self.model, model_input='simple', use_heap=False)
+        self.searcher = MCTS(max_time = 60, value_nn=self.model, model_input='simple', use_heap=False)
         pass
     def get_move(self, board):
         # get the best move
@@ -244,9 +244,9 @@ class MCTSOwenSingle:
     def __init__(self):
         self.name = "MCTSOwenSingleInput"
         self.model = keras.models.load_model('bin/owen/single_input_model/model')
-        self.searcher = MCTS(max_time = 30, use_heap=True)
+        self.searcher = MCTS(max_time = 60, use_heap=True)
     def initialize(self,color):
-        self.searcher = MCTS(max_time = 30, value_nn=self.model, model_input='positions', use_heap=False)
+        self.searcher = MCTS(max_time = 60, value_nn=self.model, model_input='positions', use_heap=False)
         pass
     def get_move(self, board):
         # get the best move
@@ -261,9 +261,9 @@ class MCTSOwenSimple:
     def __init__(self):
         self.name = "MCTSOwenSimpleInput"
         self.model = keras.models.load_model('bin/owen/simple_input_model/model')
-        self.searcher = MCTS(max_time = 30, use_heap=True)
+        self.searcher = MCTS(max_time = 60, use_heap=True)
     def initialize(self,color):
-        self.searcher = MCTS(max_time = 30, value_nn=self.model, model_input='simple', use_heap=False)
+        self.searcher = MCTS(max_time = 60, value_nn=self.model, model_input='simple', use_heap=False)
         pass
     def get_move(self, board):
         # get the best move
@@ -278,9 +278,9 @@ class MCTSOwenBtfSimple:
         self.name = "MCTSOwenBtfSimpleInput"
         self.model = keras.models.load_model('bin/btf/simple_input_model/model')
         self.model_two = keras.models.load_model('bin/owen/simple_input_model/model')
-        self.searcher = MCTS(max_time = 30, use_heap=True)
+        self.searcher = MCTS(max_time = 60, use_heap=True)
     def initialize(self, color):
-        self.searcher = MCTS(max_time = 30, value_nn=self.model, value_nn_2=self.model_two, model_input='simple', use_heap=False)
+        self.searcher = MCTS(max_time = 60, value_nn=self.model, value_nn_2=self.model_two, model_input='simple', use_heap=False)
         pass
     def get_move(self, board):
         # get the best move
@@ -295,9 +295,9 @@ class MCTSOwenBtfSimpleExpand:
         self.name = "MCTSOwenBtfSimpleInputExpandmode"
         self.model = keras.models.load_model('bin/btf/simple_input_model/model')
         self.model_two = keras.models.load_model('bin/owen/simple_input_model/model')
-        self.searcher = MCTS(max_time = 30, use_heap=True)
+        self.searcher = MCTS(max_time = 60, use_heap=True)
     def initialize(self, color):
-        self.searcher = MCTS(max_time = 30, value_nn=self.model, value_nn_2=self.model_two, model_input='simple', use_heap=False, expand_mode=True)
+        self.searcher = MCTS(max_time = 60, value_nn=self.model, value_nn_2=self.model_two, model_input='simple', use_heap=False, expand_mode=True)
         pass
     def get_move(self, board):
         # get the best move

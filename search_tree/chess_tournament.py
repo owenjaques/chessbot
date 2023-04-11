@@ -19,6 +19,10 @@ import chess_tournament
 from IPython.display import clear_output
 from IPython.display import display
 
+#import stockfish
+from stockfish import Stockfish
+
+
 import matplotlib.pyplot as plt
 sys.path.append('..')
 
@@ -93,7 +97,7 @@ class ChessTournament():
                     try:
                         game_results, elo_result = self.play_game(agent1, agent2)
                     except:
-                        return 0
+                        continue
                     # calculate ELO rating and update the results
                     if elo_result != 0:
                     # update the tournament results
@@ -210,10 +214,8 @@ class ChessTournament():
             except:
                 move = None
         # get the result of the game
-        try:
-            result = board.result()
-        except:
-            result = 0
+        
+        result = board.result()
         # update the game results
         elo_result = 0
         if result == "1-0":
