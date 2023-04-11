@@ -418,12 +418,15 @@ class MCTS():
             if self.nodes[child].board.is_checkmate():
                 checkmate = child.action
             if len(self.nodes[child].children) == 1:
+                great_grandchild_checks = 0
                 for great_grandchild in self.nodes[self.nodes[child].children[0]].children:
                     if self.nodes[great_grandchild].value < best_value:
                         best_move = self.nodes[child].action
                         best_value = self.nodes[great_grandchild].value
                     if self.nodes[great_grandchild].board.is_checkmate():
-                        checkmate = child.action
+                        great_grandchild_checks += 1
+                if great_grandchild_checks == len(self.nodes[self.nodes[child].children[0]].children):
+                    checkmate = child.action
         self.best_move_value = best_value
         if checkmate != None:
             return checkmate
