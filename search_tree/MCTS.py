@@ -36,9 +36,9 @@ from search_tree.experiments.CNN.board_processing import Boardprocessing
 # have pretty heavily deviated from the original MCTS implementation
 # is more of a UCT implementation now mixed with a few other ideas
 class MCTS():
-    def __init__(self, max_time=10, num_simulations=500, player='white', max_depth=25, policy_nn=None, value_nn=None, value_nn_2=None, model_input=None, use_heap=False, expand_mode=False):
+    def __init__(self, max_time=10, num_simulations=2500, color=chess.WHITE, max_depth=25, policy_nn=None, value_nn=None, value_nn_2=None, model_input=None, use_heap=False, expand_mode=False):
         self.board = chess.Board()
-        self.player = player
+        self.player_color = color
         self.time_limit = max_time
         self.num_simulations = num_simulations
         self.max_depth = max_depth
@@ -113,20 +113,19 @@ class MCTS():
                     value = self.evaluate(node)
                 else:
                     if self.value != None:
-                        value = self.nodes[node].value
+                        value = max(self.nodes[child].value for child in self.nodes[node].children)
                     else:
                         # unsure about this... need to test more
                         if self.heap_mark:
-                            #value = sum(self.nodes[child].value for child in self.nodes[node].children)
-                            try:
-                                value = min(self.nodes[child].value for child in self.nodes[node].children)
-                            except:
-                                value = self.evaluate(node)
+                            value = sum(self.nodes[child].value for child in self.nodes[node].children)
+                            #value = self.evaluate(node)
                             #value = self.evaluate(node)
                             #value = self.rollout(node)
                         else:
                             #value = sum(self.nodes[child].value for child in self.nodes[node].children)/len(self.nodes[node].children)
-                            value = self.rollout(node)
+                            #value = self.rollout(node)
+                            value = self.evaluate(node)
+
                 self.backpropagate(node, value)
 
         # return the best move
@@ -142,7 +141,7 @@ class MCTS():
             min_value = math.inf
             best_child = None
             for child in self.nodes[node].children:
-                child_value = self.nodes[child].value / self.nodes[child].visits + math.sqrt(2 * math.log(self.nodes[node].visits) / (self.nodes[child].visits+1))
+                child_value = self.nodes[child].value / self.nodes[child].visits - math.sqrt(2 * math.log(self.nodes[node].visits) / (self.nodes[child].visits+1))
                 if child_value < min_value:
                     min_value = self.nodes[child].value
                     best_child = child
@@ -321,7 +320,7 @@ class MCTS():
                     value += b_value*turn*sim_turn
                 else:
                     # + if good for player to play next move
-                    value += self.predict(sim_board)*sim_turn*turn
+                    value -= self.predict(sim_board)*sim_turn*turn
 
             value = value/sims
         else:
@@ -336,7 +335,7 @@ class MCTS():
                 sim_turn = -1
                 if sim_board.turn == board.turn:
                     sim_turn = 1
-                value += self.get_board_value(sim_board)*turn*sim_turn
+                value -= self.get_board_value(sim_board)*turn*sim_turn
             value = value/sims
 
         return value

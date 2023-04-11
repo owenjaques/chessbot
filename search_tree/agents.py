@@ -23,6 +23,44 @@ import os
 #import stockfish
 from stockfish import Stockfish
 
+import sys 
+sys.path.append('..')
+
+
+#####################
+####Black/White test
+
+class White:
+    def __init__(self):
+        self.name = "White"
+        self.model = keras.models.load_model('bin/btf/simple_input_model/model')
+        self.bot = ChessBot(self.model, ModelInput('simple'), chess.WHITE, exploration_rate=0.0)
+    def initialize(self, color):
+        self.bot = ChessBot(self.model, ModelInput('simple'), color, exploration_rate=0.0)
+    def get_move(self, board):
+        # get the best move
+        move = self.bot.move(board)
+        # return the best move
+        return move
+    def get_next_move(self, board):
+        return self.get_move(board)
+    
+class Black:
+    def __init__(self):
+        self.name = "Black"
+        self.model = keras.models.load_model('bin/btf/simple_input_model/model')
+        self.bot = ChessBot(self.model, ModelInput('simple'), chess.WHITE, exploration_rate=0.0)
+    def initialize(self, color):
+        self.bot = ChessBot(self.model, ModelInput('simple'), color, exploration_rate=0.0)
+    def get_move(self, board):
+        # get the best move
+        move = self.bot.move(board)
+        # return the best move
+        return move
+    def get_next_move(self, board):
+        return self.get_move(board)
+
+
 
 class MCTSOwenBtfSimpleTEST:
     def __init__(self):
@@ -31,7 +69,7 @@ class MCTSOwenBtfSimpleTEST:
         self.model_two = keras.models.load_model('bin/owen/simple_input_model/model')
         self.searcher = MCTSTest(max_time = 30, use_heap=True)
     def initialize(self, color):
-        self.searcher = MCTSTest(max_time = 30, value_nn=self.model, value_nn_2=self.model_two, model_input='simple', use_heap=False)
+        self.searcher = MCTSTest(max_time = 30, color=color, value_nn=self.model, value_nn_2=self.model_two, model_input='simple', use_heap=False)
         pass
     def get_move(self, board):
         # get the best move
@@ -41,15 +79,16 @@ class MCTSOwenBtfSimpleTEST:
     def get_next_move(self, board):
         return self.get_move(board)
 
-class MCTSHeapAgentTEST:
+class MCTSAgentTEST:
     def __init__(self):
-        self.name = "MCTS Heap Agent time 30 TEST!!!"
-        self.searcher = MCTSTest(max_time = 30, use_heap=True)
+        self.name = "MCTS Agent time 30 TEST!!!"
+        self.searcher = MCTSTest(max_time = 30, use_heap=False)
     def initialize(self, color):
-        self.searcher = MCTSTest(max_time = 30, use_heap=True)
+        
         pass
     def get_move(self, board):
         # get the best move
+        self.searcher = MCTSTest(max_time = 30, use_heap=True)
         move = self.searcher.search(board)
         # return the best move
         return move
@@ -62,8 +101,8 @@ class MCTSHeapAgentTEST:
 
 class StockfishAgent1000:
     def __init__(self):
-        self.path = os.getcwd()+"/stockfish_15.1_win_x64_avx2/stockfish-windows-2022-x86-64-avx2.exe"
-        self.stockfish = Stockfish(self.path, parameters={"Threads": 1, "UCI_LimitStrength": True, "Skill Level": 20})
+        self.path = os.getcwd()+"\stockfish_15.1_win_x64_avx2\stockfish-windows-2022-x86-64-avx2.exe"
+        self.stockfish = Stockfish(self.path, parameters={"Threads": 1, "UCI_LimitStrength": True})
         self.name = "Stockfish 1000 Elo"
     def initialize(self, color):
         pass
@@ -112,7 +151,7 @@ class StockfishAgent2000:
 class MCTSHeapAgent:
     def __init__(self):
         self.name = "MCTS Heap Agent time 30"
-        self.searcher = MCTS(max_time = 30, use_heap=True)
+        self.searcher = MCTS(max_time = 30, use_heap=False)
     def initialize(self, color):
         self.searcher = MCTS(max_time = 30, use_heap=True)
         pass
@@ -147,13 +186,13 @@ class MCTSHeapAgent2000and15:
 # settings: num_simulations = 2000, max_depth = 15
 class MCTSAgent:
     def __init__(self):
-        self.name = "MCTS Heap Agent time 30 num_simulations 2000 max_depth 25"
+        self.name = "MCTS Agent time 30 num_simulations 1000 max_depth 25"
         self.searcher = MCTS(max_time = 30, use_heap=True)
     def initialize(self,color):
-        self.searcher = MCTS(max_time = 30, num_simulations=2000, max_depth=25, use_heap=False)
         pass
     def get_move(self, board):
         # get the best move
+        self.searcher = MCTS(max_time = 30,  use_heap=False)
         move = self.searcher.search(board)
         # return the best move
         return move
