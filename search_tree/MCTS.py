@@ -109,22 +109,28 @@ class MCTS():
                 self.expand(node)
                 board = chess.Board(self.nodes[node].board.fen())
                 # left as a placeholder for now to test
-                if self.expand_mode:
-                    value = self.evaluate(node)
-                else:
-                    if self.value != None:
-                        value = max(self.nodes[child].value for child in self.nodes[node].children)
+                value = 0
+                if board.is_stalemate() or board.is_insufficient_material() or board.can_claim_fifty_moves() or board.can_claim_threefold_repetition():
+                    value = 1
+                elif board.result() == "1-0" or board.result() == "0-1":
+                    value = -1
+                if value == 0:
+                    if self.expand_mode:
+                        value = self.evaluate(node)
                     else:
-                        # unsure about this... need to test more
-                        if self.heap_mark:
-                            value = sum(self.nodes[child].value for child in self.nodes[node].children)
-                            #value = self.evaluate(node)
-                            #value = self.evaluate(node)
-                            #value = self.rollout(node)
+                        if self.value != None:
+                            value = max(self.nodes[child].value for child in self.nodes[node].children)
                         else:
-                            #value = sum(self.nodes[child].value for child in self.nodes[node].children)/len(self.nodes[node].children)
-                            #value = self.rollout(node)
-                            value = self.evaluate(node)
+                            # unsure about this... need to test more
+                            if self.heap_mark:
+                                value = sum(self.nodes[child].value for child in self.nodes[node].children)
+                                #value = self.evaluate(node)
+                                #value = self.evaluate(node)
+                                #value = self.rollout(node)
+                            else:
+                                #value = sum(self.nodes[child].value for child in self.nodes[node].children)/len(self.nodes[node].children)
+                                #value = self.rollout(node)
+                                value = self.evaluate(node)
 
                 self.backpropagate(node, value)
 

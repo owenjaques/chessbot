@@ -64,7 +64,7 @@ class Black:
 
 class MCTSOwenBtfSimpleTEST:
     def __init__(self):
-        self.name = "MCTS Owen Btf Simple TEST!!!"
+        self.name = "MCTSOwenBtfSimpleTEST!!!"
         self.model = keras.models.load_model('bin/btf/simple_input_model/model')
         self.model_two = keras.models.load_model('bin/owen/simple_input_model/model')
         self.searcher = MCTSTest(max_time = 30, use_heap=True)
@@ -81,7 +81,7 @@ class MCTSOwenBtfSimpleTEST:
 
 class MCTSAgentTEST:
     def __init__(self):
-        self.name = "MCTS Agent time 30 TEST!!!"
+        self.name = "MCTSAgenttime30TEST!!!"
         self.searcher = MCTSTest(max_time = 30, use_heap=False)
     def initialize(self, color):
         
@@ -103,7 +103,7 @@ class StockfishAgent1000:
     def __init__(self):
         self.path = os.getcwd()+"\stockfish_15.1_win_x64_avx2\stockfish-windows-2022-x86-64-avx2.exe"
         self.stockfish = Stockfish(self.path, parameters={"Threads": 1, "UCI_LimitStrength": True})
-        self.name = "Stockfish 1000 Elo"
+        self.name = "Stockfish1000Elo"
     def initialize(self, color):
         pass
     def get_move(self, board):
@@ -116,7 +116,7 @@ class StockfishAgent1350:
     def __init__(self):
         self.path = os.getcwd()+"/stockfish_15.1_win_x64_avx2/stockfish-windows-2022-x86-64-avx2.exe"
         self.stockfish = Stockfish(self.path, parameters={"Threads": 1, "UCI_LimitStrength": True, "Skill Level": 20})
-        self.name = "Stockfish 1350 Elo"
+        self.name = "Stockfish1350Elo"
     def initialize(self, color):
         pass
     def get_move(self, board):
@@ -129,7 +129,7 @@ class StockfishAgent2000:
     def __init__(self):
         self.path = os.getcwd()+"/stockfish_15.1_win_x64_avx2/stockfish-windows-2022-x86-64-avx2.exe"
         self.stockfish = Stockfish(self.path, parameters={"Threads": 1, "UCI_LimitStrength": True, "Skill Level": 20})
-        self.name = "Stockfish 2000 Elo"
+        self.name = "Stockfish2000 Elo"
     def initialize(self, color):
         pass
     def get_move(self, board):
@@ -150,7 +150,7 @@ class StockfishAgent2000:
 # settings: default settings 
 class MCTSHeapAgent:
     def __init__(self):
-        self.name = "MCTS Heap Agent time 30"
+        self.name = "MCTSHeapAgenttime30"
         self.searcher = MCTS(max_time = 30, use_heap=False)
     def initialize(self, color):
         self.searcher = MCTS(max_time = 30, use_heap=True)
@@ -168,7 +168,7 @@ class MCTSHeapAgent:
 # settings: num_simulations = 2000, max_depth = 15
 class MCTSHeapAgent2000and15:
     def __init__(self):
-        self.name = "MCTS Heap Agent time 60 num_simulations 2000 max_depth 15"
+        self.name = "MCTSHeapAgent_time60_num_simulations2000_max_depth15"
         self.searcher = MCTS(max_time = 60, use_heap=True)
     def initialize(self, color):
         self.searcher = MCTS(max_time = 60, num_simulations=2000, max_depth=15, use_heap=True)
@@ -186,7 +186,7 @@ class MCTSHeapAgent2000and15:
 # settings: num_simulations = 2000, max_depth = 15
 class MCTSAgent:
     def __init__(self):
-        self.name = "MCTS Agent time 30 num_simulations 1000 max_depth 25"
+        self.name = "MCTSAgent_time30_num_simulations1000_max_depth25"
         self.searcher = MCTS(max_time = 30, use_heap=True)
     def initialize(self,color):
         pass
@@ -207,7 +207,7 @@ class MCTSAgent:
 
 class MCTSBtfSingle:
     def __init__(self):
-        self.name = "MCTS BTF Single Input"
+        self.name = "MCTSBTFSingleInput"
         self.model = keras.models.load_model('bin/btf/single_input_model/model')
         self.searcher = MCTS(max_time = 30, use_heap=True)
     def initialize(self,color):
@@ -224,7 +224,7 @@ class MCTSBtfSingle:
 
 class MCTSBtfSimple:
     def __init__(self):
-        self.name = "MCTS BTF Simple Input"
+        self.name = "MCTSBTFSimpleInput"
         self.model = keras.models.load_model('bin/btf/simple_input_model/model')
         self.searcher = MCTS(max_time = 30, use_heap=True)
     def initialize(self,color):
@@ -240,7 +240,7 @@ class MCTSBtfSimple:
     
 class MCTSOwenSingle:
     def __init__(self):
-        self.name = "MCTS Owen Single Input"
+        self.name = "MCTSOwenSingleInput"
         self.model = keras.models.load_model('bin/owen/single_input_model/model')
         self.searcher = MCTS(max_time = 30, use_heap=True)
     def initialize(self,color):
@@ -257,7 +257,7 @@ class MCTSOwenSingle:
     
 class MCTSOwenSimple:
     def __init__(self):
-        self.name = "MCTS Owen Simple Input"
+        self.name = "MCTSOwenSimpleInput"
         self.model = keras.models.load_model('bin/owen/simple_input_model/model')
         self.searcher = MCTS(max_time = 30, use_heap=True)
     def initialize(self,color):
@@ -273,7 +273,7 @@ class MCTSOwenSimple:
 
 class MCTSOwenBtfSimple:
     def __init__(self):
-        self.name = "MCTS Owen Btf Simple Input"
+        self.name = "MCTSOwenBtfSimpleInput"
         self.model = keras.models.load_model('bin/btf/simple_input_model/model')
         self.model_two = keras.models.load_model('bin/owen/simple_input_model/model')
         self.searcher = MCTS(max_time = 30, use_heap=True)
@@ -290,7 +290,7 @@ class MCTSOwenBtfSimple:
     
 class MCTSOwenBtfSimpleExpand:
     def __init__(self):
-        self.name = "MCTS Owen Btf Simple Input Expand mode"
+        self.name = "MCTSOwenBtfSimpleInputExpandmode"
         self.model = keras.models.load_model('bin/btf/simple_input_model/model')
         self.model_two = keras.models.load_model('bin/owen/simple_input_model/model')
         self.searcher = MCTS(max_time = 30, use_heap=True)

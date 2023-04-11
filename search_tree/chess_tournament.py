@@ -78,10 +78,10 @@ class ChessTournament():
             # loop through the games per round
             for game in range(self.games_per_round):
                 # randomly select two agents
-                #agent1 = random.choice(self.agents)
-                #agent2 = random.choice(self.agents)
-                agent1 = self.agents[0]
-                agent2 = self.agents[1]
+                agent1 = random.choice(self.agents)
+                agent2 = random.choice(self.agents)
+                #agent1 = self.agents[0]
+                #agent2 = self.agents[1]
                 # make sure the agents are not the same
                 while agent1 == agent2:
                     agent2 = random.choice(self.agents)
@@ -192,7 +192,7 @@ class ChessTournament():
                     display(board)
                     print("White: "  + agent1.name + "  Black: " + agent2.name)
             except:
-                break
+                move = None
             try:
                 # get the move from the second agent
                 move = agent2.get_move(board)
@@ -203,9 +203,12 @@ class ChessTournament():
                     display(board)
                     print("White: " + agent1.name + "  Black: " + agent2.name )
             except:
-                break
+                move = None
         # get the result of the game
-        result = board.result()
+        try:
+            result = board.result()
+        except:
+            result = 0
         # update the game results
         elo_result = 0
         if result == "1-0":
