@@ -36,7 +36,7 @@ from search_tree.experiments.CNN.board_processing import Boardprocessing
 # have pretty heavily deviated from the original MCTS implementation
 # is more of a UCT implementation now mixed with a few other ideas
 class MCTSTest():
-    def __init__(self, max_time=10, num_simulations=2500, color=chess.WHITE, max_depth=15, policy_nn=None, value_nn=None, value_nn_2=None, model_input=None, use_heap=False, expand_mode=False):
+    def __init__(self, max_time=10, num_simulations=2500, color=chess.WHITE, max_depth=25, policy_nn=None, value_nn=None, value_nn_2=None, model_input=None, use_heap=False, expand_mode=False):
         self.board = chess.Board()
         self.player_color = color
         self.time_limit = max_time
@@ -86,6 +86,12 @@ class MCTSTest():
 
         if len(list(board.legal_moves)) == 1:
             return list(board.legal_moves)[0]
+        
+        for move in list(board.legal_moves):
+            board.push(move)
+            if board.is_checkmate() or board.result() == "1-0" or board.result() == "0-1":
+                return move
+            board.pop()
 
         # set the root node
         self.set_root(board)
@@ -109,22 +115,28 @@ class MCTSTest():
                 self.expand(node)
                 board = chess.Board(self.nodes[node].board.fen())
                 # left as a placeholder for now to test
-                if self.expand_mode:
-                    value = self.evaluate(node)
-                else:
-                    if self.value != None:
-                        value = max(self.nodes[child].value for child in self.nodes[node].children)
+                value = 0
+                if board.is_stalemate() or board.is_insufficient_material() or board.can_claim_fifty_moves() or board.can_claim_threefold_repetition():
+                    value = 1
+                elif board.result() == "1-0" or board.result() == "0-1" or board.is_checkmate():
+                    value = -2
+                if value == 0:
+                    if self.expand_mode:
+                        value = self.evaluate(node)
                     else:
-                        # unsure about this... need to test more
-                        if self.heap_mark:
-                            value = sum(self.nodes[child].value for child in self.nodes[node].children)
-                            #value = self.evaluate(node)
-                            #value = self.evaluate(node)
-                            #value = self.rollout(node)
+                        if self.value != None:
+                            value = max(self.nodes[child].value for child in self.nodes[node].children)
                         else:
-                            #value = sum(self.nodes[child].value for child in self.nodes[node].children)/len(self.nodes[node].children)
-                            #value = self.rollout(node)
-                            value = self.evaluate(node)
+                            # unsure about this... need to test more
+                            if self.heap_mark:
+                                value = sum(self.nodes[child].value for child in self.nodes[node].children)
+                                #value = self.evaluate(node)
+                                #value = self.evaluate(node)
+                                #value = self.rollout(node)
+                            else:
+                                #value = sum(self.nodes[child].value for child in self.nodes[node].children)/len(self.nodes[node].children)
+                                #value = self.rollout(node)
+                                value = self.evaluate(node)
 
                 self.backpropagate(node, value)
 
@@ -197,11 +209,11 @@ class MCTSTest():
             board = chess.Board(board)
         if board.is_game_over(claim_draw=True):
             if board.result() == "1-0" or board.result() == "0-1":
-                return -1
+                return -1.3
             else:
                 return 0
         elif board.is_checkmate():
-            return -1
+            return -1.3
         else:
             return self.heuristic(board)
     
@@ -223,7 +235,7 @@ class MCTSTest():
             return b_val
         if self.value == None and self.heap_mark:
             #return max(-1, min((self.rollout(board) + b_val)/1.79, 1))
-            return self.rollout(board) + b_val
+            return self.rollout(board)  + b_val
         elif self.value == None and not self.heap_mark:
             return self.rollout(board)
         return max(-1, min((self.nodes[board.fen()].value + b_val)/2, 1))
@@ -255,8 +267,8 @@ class MCTSTest():
             for square in chess.SQUARES:
                 position += len(board.attackers(chess.WHITE, square))*0.1
                 position += len(board.attackers(chess.BLACK, square))*-0.1
-                position += len(board.defenders(chess.WHITE, square))*0.14
-                position += len(board.defenders(chess.BLACK, square))*-0.14
+                position += len(board.defenders(chess.WHITE, square))*0.1
+                position += len(board.defenders(chess.BLACK, square))*-0.1
 
             # add bonus for center control
             position += len(board.attackers(chess.WHITE, chess.E4)) * 0.1
@@ -290,7 +302,7 @@ class MCTSTest():
         sims = self.num_simulations
         depth = self.max_depth
 
-        
+        """
         if self.move_count < 5:
             sims = int(self.num_simulations/15)
             depth = int(self.max_depth*15)
@@ -300,7 +312,7 @@ class MCTSTest():
         elif self.move_count < 15:
             sims = int(self.num_simulations/5)
             depth = int(self.max_depth*5)
-        
+        """
 
         # sample up to depth
         if self.value != None and not self.expand_mode :
@@ -398,12 +410,26 @@ class MCTSTest():
         # find the best move
         best_move = None
         best_value = math.inf
+        checkmate = None
         for child in self.nodes[self.root].children:
             if self.nodes[child].value < best_value:
                 best_move = self.nodes[child].action
                 best_value = self.nodes[child].value
+            if self.nodes[child].board.is_checkmate():
+                checkmate = child.action
+            if len(self.nodes[child].children) == 1:
+                great_grandchild_checks = 0
+                for great_grandchild in self.nodes[self.nodes[child].children[0]].children:
+                    if self.nodes[great_grandchild].value < best_value:
+                        best_move = self.nodes[child].action
+                        best_value = self.nodes[great_grandchild].value
+                    if self.nodes[great_grandchild].board.is_checkmate():
+                        great_grandchild_checks += 1
+                if great_grandchild_checks == len(self.nodes[self.nodes[child].children[0]].children):
+                    checkmate = child.action
         self.best_move_value = best_value
-
+        if checkmate != None:
+            return checkmate
         return best_move
     
     def check_move(self, move):

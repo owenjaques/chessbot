@@ -90,19 +90,22 @@ class ChessTournament():
                 agent2.initialize(chess.BLACK)
                 # play a game between the two agents
                 try:
-                    game_results, elo_result = self.play_game(agent1, agent2)
+                    try:
+                        game_results, elo_result = self.play_game(agent1, agent2)
+                    except:
+                        return 0
                     # calculate ELO rating and update the results
-                    
+                    if elo_result != 0:
                     # update the tournament results
-                    if agent1.name not in tournament_results.results:
-                        tournament_results.results[agent1.name] = game_results.results[agent1.name]
+                        if agent1.name not in tournament_results.results:
+                            tournament_results.results[agent1.name] = game_results.results[agent1.name]
+                        else:
+                            tournament_results.results[agent1.name] += game_results.results[agent1.name]
+                        if agent2.name not in tournament_results.results:
+                            tournament_results.results[agent2.name] = game_results.results[agent2.name]
+                        else:
+                            tournament_results.results[agent2.name] += game_results.results[agent2.name]
                     else:
-                        tournament_results.results[agent1.name] += game_results.results[agent1.name]
-                    if agent2.name not in tournament_results.results:
-                        tournament_results.results[agent2.name] = game_results.results[agent2.name]
-                    else:
-                        tournament_results.results[agent2.name] += game_results.results[agent2.name]
-                    if elo_result == 0:
                         tournament_results.draws[agent1.name] += 1
                         tournament_results.draws[agent2.name] += 1
                         # draws against:
@@ -140,10 +143,12 @@ class ChessTournament():
                         self.calculate_elo_rating(tournament_results, agent1, agent2, elo_result)
                     except:
                         print("Failed to calculate elo rating")
+                        continue
                     try:
                         self.save_progress(tournament_results=tournament_results)
                     except: 
                         print("Failed to save progress")
+                        continue
                 except:
                     print("Game failed!, moving onto next game")
                     if agent1.name in tournament_results.failed_games:

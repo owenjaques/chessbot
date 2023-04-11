@@ -125,7 +125,7 @@ class MCTS():
                         value = self.evaluate(node)
                     else:
                         if self.value != None:
-                            value = min(self.nodes[child].value for child in self.nodes[node].children)
+                            value = max(self.nodes[child].value for child in self.nodes[node].children)
                         else:
                             # unsure about this... need to test more
                             if self.heap_mark:
@@ -138,7 +138,7 @@ class MCTS():
                                 #value = self.rollout(node)
                                 value = self.evaluate(node)
 
-                self.backpropagate(node, -value)
+                self.backpropagate(node, value)
 
         # return the best move
         return self.best_move()

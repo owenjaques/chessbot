@@ -68,10 +68,12 @@ class MCTSOwenBtfSimpleTEST:
         self.model = keras.models.load_model('bin/btf/simple_input_model/model')
         self.model_two = keras.models.load_model('bin/owen/simple_input_model/model')
         self.searcher = MCTSTest(max_time = 30, use_heap=True)
+        self.color = chess.BLACK
     def initialize(self, color):
-        self.searcher = MCTSTest(max_time = 30, color=color, value_nn=self.model, value_nn_2=self.model_two, model_input='simple', use_heap=False)
+        self.color = color
         pass
     def get_move(self, board):
+        self.searcher = MCTSTest(max_time = 30, color=self.color, value_nn=self.model, value_nn_2=self.model_two, model_input='simple', use_heap=False)
         # get the best move
         move = self.searcher.search(board)
         # return the best move
@@ -102,7 +104,7 @@ class MCTSAgentTEST:
 class StockfishAgent1000:
     def __init__(self):
         self.path = os.getcwd()+"\stockfish_15.1_win_x64_avx2\stockfish-windows-2022-x86-64-avx2.exe"
-        self.stockfish = Stockfish(self.path, parameters={"Threads": 1, "UCI_LimitStrength": True})
+        self.stockfish = Stockfish(self.path, parameters={"UCI_LimitStrength": True})
         self.name = "Stockfish1000Elo"
     def initialize(self, color):
         pass
@@ -413,7 +415,7 @@ class ChessBotAgentOwenTripleInput:
 # random agent
 class RandomAgent:
     def __init__(self):
-        self.name = "Random Agent"
+        self.name = "RandomAgent"
     def initialize(self, color):
         pass
     def get_move(self, board):
@@ -424,7 +426,7 @@ class RandomAgent:
 # minimax agent : copilot directed from ??? github.com/kevinhughes27/TensorKart/blob/master/tensorkart/agents.py
 class MinimaxAgent:
     def __init__(self):
-        self.name = "Minimax Agent Depth 10"
+        self.name = "MinimaxAgentDepth10"
         self.depth = 10
     def initialize(self, color):
         pass
@@ -436,7 +438,7 @@ class MinimaxAgent:
 # minimax agent with alpha beta pruning
 class MinimaxABAgent:
     def __init__(self):
-        self.name = "Minimax AB Agent Depth 10"
+        self.name = "MinimaxABAgentDepth10"
         self.depth = 10
     def initialize(self, color):
         pass
