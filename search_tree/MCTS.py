@@ -113,7 +113,7 @@ class MCTS():
                     value = self.evaluate(node)
                 else:
                     if self.value != None:
-                        value = -self.nodes[node].value
+                        value = self.nodes[node].value
                     else:
                         # unsure about this... need to test more
                         if self.heap_mark:
@@ -365,7 +365,7 @@ class MCTS():
         self.nodes[node].add_visit(1)
         self.nodes[node].value = (self.nodes[node].value*self.nodes[node].visits - value)/(self.nodes[node].visits + 1)
         if self.nodes[node].parent != None:
-            self.backpropagate(self.nodes[node].parent, value)
+            self.backpropagate(self.nodes[node].parent, -value)
         
 
     # returns - if good for parent, + if good for child (next to play)

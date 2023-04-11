@@ -188,7 +188,7 @@ class ChessTournament():
                 if self.should_visualize:
                     clear_output(wait=True)
                     display(board)
-                    print(agent1.name + " " + agent2.name + ": ")
+                    print("White: "  + agent1.name + "  Black: " + agent2.name)
             except:
                 break
             try:
@@ -199,7 +199,7 @@ class ChessTournament():
                 if self.should_visualize:
                     clear_output(wait=True)
                     display(board)
-                    print(agent1.name + " " + agent2.name + ": ")
+                    print("White: " + agent1.name + "  Black: " + agent2.name )
             except:
                 break
         # get the result of the game
@@ -255,7 +255,7 @@ class ChessTournament():
                     tournament_results.results[split_line[0] + " " + split_line[2] + " games played"] = int(split_line[4])
                 elif split_line[1] == 'draws:':
                     # add the agent result to the tournament results
-                    tournament_results.results[split_line[0] + " draws"] = int(split_line[2])
+                    tournament_results.draws[split_line[0]] = int(split_line[2])
                 elif split_line[1] == 'draws_against':
                     # add the agent vs agent result to the tournament results
                     tournament_results.results[split_line[0] + " " + split_line[2] + " draws"] = int(split_line[4])
@@ -278,7 +278,7 @@ class ChessTournament():
             if agent.name in tournament_results.results:
                 # write the agent results to the file
                 file.write(agent.name + " wins: " + str(tournament_results.results[agent.name]) + " \n")
-                file.write(agent.name + " draws: " + str(tournament_results.results[agent.name + " draws"]) + " \n")
+                file.write(agent.name + " draws: " + str(tournament_results.draws[agent.name]) + " \n")
                 file.write(agent.name + " games_played: " + str(tournament_results.results[agent.name + " games played"]) + " \n")
                 file.write(agent.name + " failed_games: " + str(tournament_results.failed_games[agent.name]) + " \n")
                 # save elo rating
