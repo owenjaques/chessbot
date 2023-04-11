@@ -36,7 +36,7 @@ from search_tree.experiments.CNN.board_processing import Boardprocessing
 # have pretty heavily deviated from the original MCTS implementation
 # is more of a UCT implementation now mixed with a few other ideas
 class MCTS():
-    def __init__(self, max_time=10, num_simulations=2500, color=chess.WHITE, max_depth=25, policy_nn=None, value_nn=None, value_nn_2=None, model_input=None, use_heap=False, expand_mode=False):
+    def __init__(self, max_time=10, num_simulations=2500, color=chess.WHITE, max_depth=50, policy_nn=None, value_nn=None, value_nn_2=None, model_input=None, use_heap=False, expand_mode=False):
         self.board = chess.Board()
         self.player_color = color
         self.time_limit = max_time
@@ -51,6 +51,7 @@ class MCTS():
         self.model_input = model_input
         self.move_count = 0
         self.expand_mode = expand_mode
+        self.depth = 0
 
 
     def get_best_move_value(self, board):
@@ -69,18 +70,20 @@ class MCTS():
             self.nodes[self.root].set_value(0)
             self.nodes[self.root].set_parent(None)
             self.nodes[self.root].set_action(None)
-            self.nodes[self.root].set_depth(0)
             if self.heap_mark:
                 self.leaf_heapq = []
                 heapq.heapify(self.leaf_heapq)
             self.expand( self.root )
         else:
+            self.depth = self.nodes[self.root].depth
             self.nodes[self.root].parent = None
             # this isn't great yet... resets the heap every time
             # not sure how to efficiently update the heap yet as need to remove all nodes not connected to new root
             if self.heap_mark:
                 self.leaf_heapq = [self.nodes[self.root]]
                 heapq.heapify(self.leaf_heapq)
+
+        
         
     def search(self, board):
         start_time = time.time()
@@ -113,31 +116,35 @@ class MCTS():
 
             if node != None:
                 # expand the node
-                self.expand(node)
-                board = chess.Board(self.nodes[node].board.fen())
-                # left as a placeholder for now to test
-                value = 0
-                if board.is_stalemate() or board.is_insufficient_material() or board.can_claim_fifty_moves() or board.can_claim_threefold_repetition():
-                    value = 1
-                elif board.result() == "1-0" or board.result() == "0-1" or board.is_checkmate():
-                    value = -1.5
-                if value == 0:
-                    if self.expand_mode:
-                        value = self.evaluate(node)
-                    else:
-                        if self.value != None:
-                            value = max(self.nodes[child].value for child in self.nodes[node].children)
+                if self.nodes[node].depth - self.depth < self.max_depth:
+                    self.expand(node)
+                    board = chess.Board(self.nodes[node].board.fen())
+                    # left as a placeholder for now to test
+                    value = 0
+                    if board.is_stalemate() or board.is_insufficient_material() or board.can_claim_fifty_moves() or board.can_claim_threefold_repetition():
+                        value = 1
+                    elif board.result() == "1-0" or board.result() == "0-1" or board.is_checkmate():
+                        value = -1.5
+                    if value == 0:
+                        if self.expand_mode:
+                            value = self.evaluate(node)
                         else:
-                            # unsure about this... need to test more
-                            if self.heap_mark:
-                                value = sum(self.nodes[child].value for child in self.nodes[node].children)
-                                #value = self.evaluate(node)
-                                #value = self.evaluate(node)
-                                #value = self.rollout(node)
+                            if self.value != None:
+                                value = max(self.nodes[child].value for child in self.nodes[node].children)
                             else:
-                                #value = sum(self.nodes[child].value for child in self.nodes[node].children)/len(self.nodes[node].children)
-                                #value = self.rollout(node)
-                                value = self.evaluate(node)
+                                # unsure about this... need to test more
+                                if self.heap_mark:
+                                    value = sum(self.nodes[child].value for child in self.nodes[node].children)
+                                    #value = self.evaluate(node)
+                                    #value = self.evaluate(node)
+                                    #value = self.rollout(node)
+                                else:
+                                    #value = sum(self.nodes[child].value for child in self.nodes[node].children)/len(self.nodes[node].children)
+                                    #value = self.rollout(node)
+                                    value = self.evaluate(node)
+                else:
+                    self.nodes[node].value = 0
+                    value = 0
 
                 self.backpropagate(node, value)
 
