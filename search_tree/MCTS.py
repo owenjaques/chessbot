@@ -114,7 +114,10 @@ class MCTS():
                 else:
                     if self.value != None:
                         #value = min(self.nodes[child].value for child in self.nodes[node].children)
-                        value = self.nodes[node].value
+                        try:
+                            value = min(self.nodes[child].value for child in self.nodes[node].children)
+                        except:
+                            value = self.evaluate(node)
                         #value = self.evaluate(node)
                         #value = sum(self.nodes[child].value for child in self.nodes[node].children)/len(self.nodes[node].children)
 
@@ -228,10 +231,10 @@ class MCTS():
             return b_val
         if self.value == None and self.heap_mark:
             #return max(-1, min((self.rollout(board) + b_val)/1.79, 1))
-            return self.rollout(board) + b_val
+            return self.rollout(board)  + b_val
         elif self.value == None and not self.heap_mark:
             return self.rollout(board)
-        return max(-1, min((self.nodes[board.fen()].value + b_val)/1.36, 1))
+        return max(-1, min((self.nodes[board.fen()].value + b_val)/2, 1))
 
 
       
@@ -260,8 +263,8 @@ class MCTS():
             for square in chess.SQUARES:
                 position += len(board.attackers(chess.WHITE, square))*0.1
                 position += len(board.attackers(chess.BLACK, square))*-0.1
-                position += len(board.defenders(chess.WHITE, square))*0.1
-                position += len(board.defenders(chess.BLACK, square))*-0.1
+                position += len(board.defenders(chess.WHITE, square))*0.14
+                position += len(board.defenders(chess.BLACK, square))*-0.14
 
             # add bonus for center control
             position += len(board.attackers(chess.WHITE, chess.E4)) * 0.1
@@ -367,9 +370,9 @@ class MCTS():
         if node == None or self.nodes[node] == None:
             return
         self.nodes[node].add_visit(1)
-        self.nodes[node].value = (self.nodes[node].value*self.nodes[node].visits - value)/(self.nodes[node].visits + 1)
+        self.nodes[node].value = (self.nodes[node].value*self.nodes[node].visits + value)/(self.nodes[node].visits + 1)
         if self.nodes[node].parent != None:
-            self.backpropagate(self.nodes[node].parent, value)
+            self.backpropagate(self.nodes[node].parent, -value)
         
 
     # returns - if good for parent, + if good for child (next to play)
