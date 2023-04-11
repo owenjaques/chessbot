@@ -14,6 +14,7 @@ import chess_tournament
 import keras
 
 from MCTS import MCTS
+from MCTSTest import MCTSTest
 from neural_networks.chessbot.chessbot import ChessBot
 from neural_networks.chessbot.modelinput import ModelInput
 
@@ -21,6 +22,24 @@ import chess
 import os
 #import stockfish
 from stockfish import Stockfish
+
+
+class MCTSOwenBtfSimpleTEST:
+    def __init__(self):
+        self.name = "MCTS Owen Btf Simple TEST!!!"
+        self.model = keras.models.load_model('bin/btf/simple_input_model/model')
+        self.model_two = keras.models.load_model('bin/owen/simple_input_model/model')
+        self.searcher = MCTS(max_time = 30, use_heap=True)
+    def initialize(self, color):
+        self.searcher = MCTS(max_time = 30, value_nn=self.model, value_nn_2=self.model_two, model_input='simple', use_heap=False)
+        pass
+    def get_move(self, board):
+        # get the best move
+        move = self.searcher.search(board)
+        # return the best move
+        return move
+    def get_next_move(self, board):
+        return self.get_move(board)
 
 
 ###########################################################################################

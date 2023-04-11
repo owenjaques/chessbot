@@ -35,8 +35,8 @@ from search_tree.experiments.CNN.board_processing import Boardprocessing
 
 # have pretty heavily deviated from the original MCTS implementation
 # is more of a UCT implementation now mixed with a few other ideas
-class MCTS():
-    def __init__(self, max_time=10, num_simulations=500, player='white', max_depth=25, policy_nn=None, value_nn=None, value_nn_2=None, model_input=None, use_heap=False, expand_mode=False):
+class MCTSTest():
+    def __init__(self, max_time=10, num_simulations=1000, player='white', max_depth=15, policy_nn=None, value_nn=None, value_nn_2=None, model_input=None, use_heap=False, expand_mode=False):
         self.board = chess.Board()
         self.player = player
         self.time_limit = max_time
@@ -114,11 +114,7 @@ class MCTS():
                 else:
                     if self.value != None:
                         #value = min(self.nodes[child].value for child in self.nodes[node].children)
-                        try:
-                            value = min(self.nodes[child].value for child in self.nodes[node].children)
-                        except:
-                            value = self.evaluate(node)
-                        #value = self.evaluate(node)
+                        value = -self.nodes[node].value
                         #value = sum(self.nodes[child].value for child in self.nodes[node].children)/len(self.nodes[node].children)
 
                     else:
