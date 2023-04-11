@@ -86,6 +86,12 @@ class MCTS():
 
         if len(list(board.legal_moves)) == 1:
             return list(board.legal_moves)[0]
+        
+        for move in list(board.legal_moves):
+            board.push(move)
+            if board.is_checkmate() or board.result() == "1-0" or board.result() == "0-1":
+                return move
+            board.pop()
 
         # set the root node
         self.set_root(board)
@@ -112,14 +118,14 @@ class MCTS():
                 value = 0
                 if board.is_stalemate() or board.is_insufficient_material() or board.can_claim_fifty_moves() or board.can_claim_threefold_repetition():
                     value = 1
-                elif board.result() == "1-0" or board.result() == "0-1":
-                    value = -1
+                elif board.result() == "1-0" or board.result() == "0-1" or board.is_checkmate():
+                    value = -2
                 if value == 0:
                     if self.expand_mode:
                         value = self.evaluate(node)
                     else:
                         if self.value != None:
-                            value = max(self.nodes[child].value for child in self.nodes[node].children)
+                            value = min(self.nodes[child].value for child in self.nodes[node].children)
                         else:
                             # unsure about this... need to test more
                             if self.heap_mark:
@@ -132,7 +138,7 @@ class MCTS():
                                 #value = self.rollout(node)
                                 value = self.evaluate(node)
 
-                self.backpropagate(node, value)
+                self.backpropagate(node, -value)
 
         # return the best move
         return self.best_move()
@@ -203,11 +209,11 @@ class MCTS():
             board = chess.Board(board)
         if board.is_game_over(claim_draw=True):
             if board.result() == "1-0" or board.result() == "0-1":
-                return -1
+                return -1.3
             else:
                 return 0
         elif board.is_checkmate():
-            return -1
+            return -1.3
         else:
             return self.heuristic(board)
     
@@ -261,8 +267,8 @@ class MCTS():
             for square in chess.SQUARES:
                 position += len(board.attackers(chess.WHITE, square))*0.1
                 position += len(board.attackers(chess.BLACK, square))*-0.1
-                position += len(board.defenders(chess.WHITE, square))*0.14
-                position += len(board.defenders(chess.BLACK, square))*-0.14
+                position += len(board.defenders(chess.WHITE, square))*0.1
+                position += len(board.defenders(chess.BLACK, square))*-0.1
 
             # add bonus for center control
             position += len(board.attackers(chess.WHITE, chess.E4)) * 0.1
@@ -404,12 +410,23 @@ class MCTS():
         # find the best move
         best_move = None
         best_value = math.inf
+        checkmate = None
         for child in self.nodes[self.root].children:
             if self.nodes[child].value < best_value:
                 best_move = self.nodes[child].action
                 best_value = self.nodes[child].value
+            if self.nodes[child].board.is_checkmate():
+                checkmate = child.action
+            if len(self.nodes[child].children) == 1:
+                for great_grandchild in self.nodes[self.nodes[child].children[0]].children:
+                    if self.nodes[great_grandchild].value < best_value:
+                        best_move = self.nodes[child].action
+                        best_value = self.nodes[great_grandchild].value
+                    if self.nodes[great_grandchild].board.is_checkmate():
+                        checkmate = child.action
         self.best_move_value = best_value
-
+        if checkmate != None:
+            return checkmate
         return best_move
     
     def check_move(self, move):
