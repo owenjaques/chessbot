@@ -1,18 +1,20 @@
-MCTSBTFSingleInput wins: 0 
+MCTSBTFSingleInput wins: 0.0 
 MCTSBTFSingleInput draws: 0 
-MCTSBTFSingleInput games_played: 0 
+MCTSBTFSingleInput games_played: 1 
 MCTSBTFSingleInput failed_games: 0 
-MCTSBTFSingleInput elo: 1000 
+MCTSBTFSingleInput elo: 984.0 
 MCTSBTFSingleInput draws_against MCTSBTFSingleInput : 0 
 MCTSBTFSingleInput draws_against MCTSBTFSimpleInput : 0 
 MCTSBTFSingleInput draws_against MCTSOwenSingleInput : 0 
 MCTSBTFSingleInput draws_against MCTSOwenSimpleInput : 0 
 MCTSBTFSingleInput draws_against MCTSOwenBtfSimpleInput : 0 
 MCTSBTFSingleInput draws_against BTFSingleAgent : 0 
+MCTSBTFSingleInput wins_against BTFSingleAgent : 0 
+MCTSBTFSingleInput games_against BTFSingleAgent : 1 
 MCTSBTFSingleInput draws_against BTFSimpleAgent : 0 
 MCTSBTFSingleInput draws_against OWENSingleAgent : 0 
 MCTSBTFSingleInput draws_against OWENSimpleAgent : 0 
-MCTSBTFSimpleInput wins: 0 
+MCTSBTFSimpleInput wins: 0.0 
 MCTSBTFSimpleInput draws: 0 
 MCTSBTFSimpleInput games_played: 0 
 MCTSBTFSimpleInput failed_games: 0 
@@ -26,7 +28,7 @@ MCTSBTFSimpleInput draws_against BTFSingleAgent : 0
 MCTSBTFSimpleInput draws_against BTFSimpleAgent : 0 
 MCTSBTFSimpleInput draws_against OWENSingleAgent : 0 
 MCTSBTFSimpleInput draws_against OWENSimpleAgent : 0 
-MCTSOwenSingleInput wins: 0 
+MCTSOwenSingleInput wins: 0.0 
 MCTSOwenSingleInput draws: 0 
 MCTSOwenSingleInput games_played: 0 
 MCTSOwenSingleInput failed_games: 0 
@@ -40,55 +42,65 @@ MCTSOwenSingleInput draws_against BTFSingleAgent : 0
 MCTSOwenSingleInput draws_against BTFSimpleAgent : 0 
 MCTSOwenSingleInput draws_against OWENSingleAgent : 0 
 MCTSOwenSingleInput draws_against OWENSimpleAgent : 0 
-MCTSOwenSimpleInput wins: 0 
-MCTSOwenSimpleInput draws: 0 
-MCTSOwenSimpleInput games_played: 0 
+MCTSOwenSimpleInput wins: 1.0 
+MCTSOwenSimpleInput draws: 2 
+MCTSOwenSimpleInput games_played: 2 
 MCTSOwenSimpleInput failed_games: 0 
-MCTSOwenSimpleInput elo: 1000 
+MCTSOwenSimpleInput elo: 1000.0 
 MCTSOwenSimpleInput draws_against MCTSBTFSingleInput : 0 
 MCTSOwenSimpleInput draws_against MCTSBTFSimpleInput : 0 
 MCTSOwenSimpleInput draws_against MCTSOwenSingleInput : 0 
 MCTSOwenSimpleInput draws_against MCTSOwenSimpleInput : 0 
-MCTSOwenSimpleInput draws_against MCTSOwenBtfSimpleInput : 0 
+MCTSOwenSimpleInput draws_against MCTSOwenBtfSimpleInput : 1 
+MCTSOwenSimpleInput wins_against MCTSOwenBtfSimpleInput : 0.5 
+MCTSOwenSimpleInput games_against MCTSOwenBtfSimpleInput : 1 
 MCTSOwenSimpleInput draws_against BTFSingleAgent : 0 
+MCTSOwenSimpleInput wins_against BTFSingleAgent : 0.5 
+MCTSOwenSimpleInput games_against BTFSingleAgent : 1 
 MCTSOwenSimpleInput draws_against BTFSimpleAgent : 0 
 MCTSOwenSimpleInput draws_against OWENSingleAgent : 0 
 MCTSOwenSimpleInput draws_against OWENSimpleAgent : 0 
-MCTSOwenBtfSimpleInput wins: 0 
-MCTSOwenBtfSimpleInput draws: 0 
-MCTSOwenBtfSimpleInput games_played: 0 
+MCTSOwenBtfSimpleInput wins: 0.5 
+MCTSOwenBtfSimpleInput draws: 1 
+MCTSOwenBtfSimpleInput games_played: 1 
 MCTSOwenBtfSimpleInput failed_games: 0 
-MCTSOwenBtfSimpleInput elo: 1000 
+MCTSOwenBtfSimpleInput elo: 1000.0 
 MCTSOwenBtfSimpleInput draws_against MCTSBTFSingleInput : 0 
 MCTSOwenBtfSimpleInput draws_against MCTSBTFSimpleInput : 0 
 MCTSOwenBtfSimpleInput draws_against MCTSOwenSingleInput : 0 
-MCTSOwenBtfSimpleInput draws_against MCTSOwenSimpleInput : 0 
+MCTSOwenBtfSimpleInput draws_against MCTSOwenSimpleInput : 1 
+MCTSOwenBtfSimpleInput wins_against MCTSOwenSimpleInput : 0.5 
+MCTSOwenBtfSimpleInput games_against MCTSOwenSimpleInput : 1 
 MCTSOwenBtfSimpleInput draws_against MCTSOwenBtfSimpleInput : 0 
 MCTSOwenBtfSimpleInput draws_against BTFSingleAgent : 0 
 MCTSOwenBtfSimpleInput draws_against BTFSimpleAgent : 0 
 MCTSOwenBtfSimpleInput draws_against OWENSingleAgent : 0 
 MCTSOwenBtfSimpleInput draws_against OWENSimpleAgent : 0 
-BTFSingleAgent wins: 0.5 
-BTFSingleAgent draws: 1 
-BTFSingleAgent games_played: 1 
+BTFSingleAgent wins: 2.0 
+BTFSingleAgent draws: 2 
+BTFSingleAgent games_played: 3 
 BTFSingleAgent failed_games: 0 
-BTFSingleAgent elo: 1000.0 
+BTFSingleAgent elo: 1016.0 
 BTFSingleAgent draws_against MCTSBTFSingleInput : 0 
+BTFSingleAgent wins_against MCTSBTFSingleInput : 1 
+BTFSingleAgent games_against MCTSBTFSingleInput : 1 
 BTFSingleAgent draws_against MCTSBTFSimpleInput : 0 
 BTFSingleAgent draws_against MCTSOwenSingleInput : 0 
 BTFSingleAgent draws_against MCTSOwenSimpleInput : 0 
+BTFSingleAgent wins_against MCTSOwenSimpleInput : 0.5 
+BTFSingleAgent games_against MCTSOwenSimpleInput : 1 
 BTFSingleAgent draws_against MCTSOwenBtfSimpleInput : 0 
 BTFSingleAgent draws_against BTFSingleAgent : 0 
 BTFSingleAgent draws_against BTFSimpleAgent : 0 
 BTFSingleAgent draws_against OWENSingleAgent : 0 
-BTFSingleAgent draws_against OWENSimpleAgent : 1 
+BTFSingleAgent draws_against OWENSimpleAgent : 0 
 BTFSingleAgent wins_against OWENSimpleAgent : 0.5 
 BTFSingleAgent games_against OWENSimpleAgent : 1 
-BTFSimpleAgent wins: 0 
+BTFSimpleAgent wins: 1.0 
 BTFSimpleAgent draws: 0 
-BTFSimpleAgent games_played: 0 
+BTFSimpleAgent games_played: 1 
 BTFSimpleAgent failed_games: 0 
-BTFSimpleAgent elo: 1000 
+BTFSimpleAgent elo: 1016.0 
 BTFSimpleAgent draws_against MCTSBTFSingleInput : 0 
 BTFSimpleAgent draws_against MCTSBTFSimpleInput : 0 
 BTFSimpleAgent draws_against MCTSOwenSingleInput : 0 
@@ -97,12 +109,14 @@ BTFSimpleAgent draws_against MCTSOwenBtfSimpleInput : 0
 BTFSimpleAgent draws_against BTFSingleAgent : 0 
 BTFSimpleAgent draws_against BTFSimpleAgent : 0 
 BTFSimpleAgent draws_against OWENSingleAgent : 0 
+BTFSimpleAgent wins_against OWENSingleAgent : 1 
+BTFSimpleAgent games_against OWENSingleAgent : 1 
 BTFSimpleAgent draws_against OWENSimpleAgent : 0 
-OWENSingleAgent wins: 0 
-OWENSingleAgent draws: 0 
-OWENSingleAgent games_played: 0 
+OWENSingleAgent wins: 0.5 
+OWENSingleAgent draws: 1 
+OWENSingleAgent games_played: 2 
 OWENSingleAgent failed_games: 0 
-OWENSingleAgent elo: 1000 
+OWENSingleAgent elo: 984.736306793522 
 OWENSingleAgent draws_against MCTSBTFSingleInput : 0 
 OWENSingleAgent draws_against MCTSBTFSimpleInput : 0 
 OWENSingleAgent draws_against MCTSOwenSingleInput : 0 
@@ -110,21 +124,27 @@ OWENSingleAgent draws_against MCTSOwenSimpleInput : 0
 OWENSingleAgent draws_against MCTSOwenBtfSimpleInput : 0 
 OWENSingleAgent draws_against BTFSingleAgent : 0 
 OWENSingleAgent draws_against BTFSimpleAgent : 0 
+OWENSingleAgent wins_against BTFSimpleAgent : 0 
+OWENSingleAgent games_against BTFSimpleAgent : 1 
 OWENSingleAgent draws_against OWENSingleAgent : 0 
-OWENSingleAgent draws_against OWENSimpleAgent : 0 
-OWENSimpleAgent wins: 0.5 
-OWENSimpleAgent draws: 1 
-OWENSimpleAgent games_played: 1 
+OWENSingleAgent draws_against OWENSimpleAgent : 1 
+OWENSingleAgent wins_against OWENSimpleAgent : 0.5 
+OWENSingleAgent games_against OWENSimpleAgent : 1 
+OWENSimpleAgent wins: 1.0 
+OWENSimpleAgent draws: 2 
+OWENSimpleAgent games_played: 2 
 OWENSimpleAgent failed_games: 0 
-OWENSimpleAgent elo: 1000.0 
+OWENSimpleAgent elo: 999.263693206478 
 OWENSimpleAgent draws_against MCTSBTFSingleInput : 0 
 OWENSimpleAgent draws_against MCTSBTFSimpleInput : 0 
 OWENSimpleAgent draws_against MCTSOwenSingleInput : 0 
 OWENSimpleAgent draws_against MCTSOwenSimpleInput : 0 
 OWENSimpleAgent draws_against MCTSOwenBtfSimpleInput : 0 
-OWENSimpleAgent draws_against BTFSingleAgent : 1 
+OWENSimpleAgent draws_against BTFSingleAgent : 0 
 OWENSimpleAgent wins_against BTFSingleAgent : 0.5 
 OWENSimpleAgent games_against BTFSingleAgent : 1 
 OWENSimpleAgent draws_against BTFSimpleAgent : 0 
-OWENSimpleAgent draws_against OWENSingleAgent : 0 
+OWENSimpleAgent draws_against OWENSingleAgent : 1 
+OWENSimpleAgent wins_against OWENSingleAgent : 0.5 
+OWENSimpleAgent games_against OWENSingleAgent : 1 
 OWENSimpleAgent draws_against OWENSimpleAgent : 0 
