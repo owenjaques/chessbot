@@ -199,19 +199,27 @@ class ChessTournament():
                     # get the move from the first agent
                     move = agent1.get_move(board)
                     # make the move
-                    board.push(move)
+                    # check if move is uci
+                    if "Stockfish" in agent1.name:
+                        board.push_uci(move)
+                    else:
+                        board.push(move)
                     if self.should_visualize:
                         clear_output(wait=True)
                         display(board)
                         print("White: "  + agent1.name + "  Black: " + agent2.name)
                 except:
+
                     move = None
             else:
                 try:
                     # get the move from the second agent
                     move = agent2.get_move(board)
                     # make the move
-                    board.push(move)
+                    if "Stockfish" in agent2.name:
+                        board.push_uci(move)
+                    else:
+                        board.push(move)
                     if self.should_visualize:
                         clear_output(wait=True)
                         display(board)
