@@ -42,7 +42,7 @@ from search_tree.experiments.CNN.board_processing import Boardprocessing
 # have pretty heavily deviated from the original MCTS implementation
 # is more of a UCT implementation now mixed with a few other ideas
 class MCTS():
-    def __init__(self, max_time=10, num_simulations=750, color=chess.WHITE, max_depth=50, policy_nn=None, value_nn=None, value_nn_2=None, model_input=None, use_heap=False, expand_mode=False, make_graph=False):
+    def __init__(self, max_time=60, num_simulations=1750, color=chess.WHITE, max_depth=25, policy_nn=None, value_nn=None, value_nn_2=None, model_input=None, use_heap=False, expand_mode=False, make_graph=False):
         self.board = chess.Board()
         self.player_color = color
         self.time_limit = max_time
@@ -63,7 +63,7 @@ class MCTS():
             self.dotgraph = pydot.Dot('Chess_Search', graph_type='digraph')
             self.dotgraph.set_edge_defaults(thickness=2, color='black')
             self.dotgraph.set_node_defaults(shape='circle', style='filled', fillcolor='white', color='black', fontcolor='black', fontsize=10, width=0.5, height=0.5)
-            self.dotgraph.set_graph_defaults(size='11,11', dpi=300, rankdir='LR', ranksep='0.5', nodesep='0.5')
+            #self.dotgraph.set_graph_defaults(size='11,11', dpi=300, rankdir='LR', ranksep='0.5', nodesep='0.5')
             self.dotgraph.set_suppress_disconnected(True)
 
 
@@ -76,7 +76,7 @@ class MCTS():
         self.root = board.fen()
         if self.make_graph:
             # add root to graph
-            self.dotgraph.add_node(pydot.Node(self.root, label=self.root, shape='box'))
+            self.dotgraph.add_node(pydot.Node(self.root, label=self.root, shape='box', size='5'))
         self.move_count += 1
         if self.root not in self.nodes:
             self.nodes = {}
@@ -123,18 +123,10 @@ class MCTS():
             # get the next node to simulate
             if self.heap_mark and len(self.leaf_heapq) > 0:
                 node = heapq.heappop(self.leaf_heapq).board.fen()
-                if self.make_graph:
-                    # make the node in the graph red
-                    if self.dotgraph.get_node(self.nodes[node].board.fen()) != []:
-                        self.dotgraph.get_node(self.nodes[node].board.fen())[0].set_label(str(self.nodes[node].visits))
             else:
                 node = self.root
                 while not self.nodes[node].terminal:
                     node = self.select(node)
-                    if self.make_graph:
-                        # add a mark to the node in the graph to indicate how many times it has been visited
-                        if self.dotgraph.get_node(self.nodes[node].board.fen()) != []:
-                            self.dotgraph.get_node(self.nodes[node].board.fen())[0].set_label(str(self.nodes[node].visits))
                     if node == None:
                         break
 
@@ -174,7 +166,7 @@ class MCTS():
 
         if self.make_graph:
             # save the graph to a file
-            self.dotgraph.write('graph.dot')
+            self.dotgraph.write('testgraph2.dot')
             return self.dotgraph
   
         # return the best move
@@ -194,6 +186,16 @@ class MCTS():
                 if child_value < min_value:
                     min_value = self.nodes[child].value
                     best_child = child
+
+            if self.make_graph:
+                # add the edge to the graph
+                for x in self.dotgraph.get_nodes():
+                    if x.get_name() == self.nodes[node].board.fen():
+                        x.set_shape('box')
+                        x.set_size('75')
+                        x.set_color('red')
+                        x.set_style('filled')
+                self.dotgraph.add_edge(pydot.Edge(self.nodes[node].board.fen(), self.nodes[best_child].board.fen(), label=str(self.nodes[best_child].action), color='red'))
             return best_child
 
     
@@ -211,13 +213,6 @@ class MCTS():
             for move in legal_moves:
                 board = chess.Board(board_start.fen())
                 board.push(move)
-                if self.make_graph:
-                    # add the move to the graph
-                    graph_node = pydot.Node(board.fen())
-                    self.dotgraph.add_node(graph_node)
-                    edge = pydot.Edge(node, board.fen(), label=move.uci())
-                    self.dotgraph.add_edge(edge) 
-
                 child = Node()
                 child.set_board(board.fen())
                 child.set_parent(self.nodes[node].board.fen())
@@ -232,6 +227,12 @@ class MCTS():
                         child.set_value(self.predict(child.board))
                 else:   
                     child.add_value(self.evaluate(child.board))
+                if self.make_graph:
+                    # add the move to the graph
+                    graph_node = pydot.Node(chess.Board(board.fen()).fen() , shape='circle', label=chess.Board(board.fen()).fen(), size=str((child.value+20)*20), fillcolor="#131621", style="filled")
+                    self.dotgraph.add_node(graph_node)
+                    edge = pydot.Edge(node, chess.Board(board.fen()).fen())
+                    self.dotgraph.add_edge(edge) 
                 child.set_terminal(True)
                 self.nodes[node].add_child(child.board.fen())
                 self.nodes[child.board.fen()] = child
@@ -387,14 +388,15 @@ class MCTS():
                     if len(legal_moves) == 0:
                         break
                     move = random.choice(legal_moves)
+                    previous_board = chess.Board(sim_board.fen()).fen()
                     sim_board.push(move)
                     if self.make_graph:
                         # create a new node in the pydot graph
-                        new_node = pydot.Node(sim_board.fen())
+                        new_node = pydot.Node(sim_board.fen(), color="#edeab4", label=sim_board.fen(), fill_color="#edeab4", style="filled", size="0.2")
                         # add the new node to the graph
                         self.dotgraph.add_node(new_node)
                         # create an edge between the current node and the new node
-                        edge = pydot.Edge(board.fen(), sim_board.fen(), label=move.uci())
+                        edge = pydot.Edge(previous_board, chess.Board(sim_board.fen()).fen(), color="#edeab4")
                         # add the edge to the graph
                         self.dotgraph.add_edge(edge)
                 sim_turn = -1
@@ -428,6 +430,23 @@ class MCTS():
             return
         self.nodes[node].add_visit(1)
         self.nodes[node].value = (self.nodes[node].value*self.nodes[node].visits - value)/(self.nodes[node].visits + 1)
+        
+        if self.make_graph and self.nodes[node].parent != None:
+            # add a thick red edge to the graph
+            try:
+                edge = self.dotgraph.get_edge(self.nodes[node].parent, node)
+                edge[0].set_color("#31f54e")
+                edge[0].set_penwidth("75")
+            except:
+                try:
+                    edge = self.dotgraph.get_edge(node, self.nodes[node].parent)
+                    edge[0].set_color("#31f54e")
+                    edge[0].set_penwidth("75")
+                except:
+                    edge = pydot.Edge(self.nodes[node].parent, node, color="#31f54e", penwidth="75")
+                    self.dotgraph.add_edge(edge)
+            # add the edge to the graph
+
         if self.nodes[node].parent != None:
             self.backpropagate(self.nodes[node].parent, -value)
         

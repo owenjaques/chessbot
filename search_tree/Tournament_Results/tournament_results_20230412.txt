@@ -1,0 +1,18 @@
+MCTSOwenSingleInput wins: 1.0 
+MCTSOwenSingleInput draws: 0 
+MCTSOwenSingleInput games_played: 3 
+MCTSOwenSingleInput failed_games: 0 
+MCTSOwenSingleInput elo: 987.1060864982155 
+MCTSOwenSingleInput draws_against MCTSOwenSingleInput : 0 
+MCTSOwenSingleInput draws_against OWENSingleAgent : 0 
+MCTSOwenSingleInput wins_against OWENSingleAgent : 1.0 
+MCTSOwenSingleInput games_against OWENSingleAgent : 2 
+OWENSingleAgent wins: 1.0 
+OWENSingleAgent draws: 0 
+OWENSingleAgent games_played: 2 
+OWENSingleAgent failed_games: 0 
+OWENSingleAgent elo: 996.8939135017845 
+OWENSingleAgent draws_against MCTSOwenSingleInput : 0 
+OWENSingleAgent wins_against MCTSOwenSingleInput : 1.0 
+OWENSingleAgent games_against MCTSOwenSingleInput : 2 
+OWENSingleAgent draws_against OWENSingleAgent : 0 

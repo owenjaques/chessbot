@@ -27,6 +27,38 @@ import sys
 sys.path.append('..')
 
 
+class ChessBotAgentOwenSingleInputTEST:
+    def __init__(self):
+        self.name = "OWENSingleAgentTEST"
+        self.model = keras.models.load_model('bin/owen/single_input_model/model')
+        self.bot = ChessBot(self.model, ModelInput('positions'), chess.WHITE, exploration_rate=0.0)
+    def initialize(self, color):
+        self.bot = ChessBot(self.model, ModelInput('positions'), color, exploration_rate=0.0)
+    def get_move(self, board):
+        # get the best move
+        move = self.bot.move(board)
+        # return the best move
+        return move
+    def get_next_move(self, board):
+        return self.get_move(board)
+
+class MCTSOwenSingleTEST:
+    def __init__(self):
+        self.name = "MCTSOwenSingleInputTEST"
+        self.model = keras.models.load_model('bin/owen/single_input_model/model')
+        self.searcher = MCTSTest(max_time = 60, use_heap=True)
+    def initialize(self,color):
+        self.searcher = MCTSTest(max_time = 60, value_nn=self.model, model_input='positions', use_heap=False)
+        pass
+    def get_move(self, board):
+        # get the best move
+        move = self.searcher.search(board)
+        # return the best move
+        return move
+    def get_next_move(self, board):
+        return self.get_move(board)
+
+
 #####################
 ####Black/White test
 
@@ -59,7 +91,6 @@ class Black:
         return move
     def get_next_move(self, board):
         return self.get_move(board)
-
 
 
 class MCTSOwenBtfSimpleTEST:
@@ -143,18 +174,16 @@ class StockfishAgent1650:
 class StockfishAgent1800:
     def __init__(self):
         self.path = os.getcwd()+"/stockfish_15.1_win_x64_avx2/stockfish-windows-2022-x86-64-avx2.exe"
-        self.stockfish = Stockfish(path=self.path)
-        self.stockfish.set_elo_rating(1800)
+        self.stockfish = Stockfish(self.path, parameters={"Threads": 1, "UCI_LimitStrength": True, "Skill Level": 20})
         self.name = "Stockfish1800"
     def initialize(self, color):
         pass
     def get_move(self, board):
         self.stockfish.set_fen_position(board.fen())
+        self.stockfish.update_engine_parameters({"UCI_Elo:": 1800})
         move = self.stockfish.get_best_move()
         return move
     
-
-
 ###########################################################################################
 #################################### MCTS AGENTS ##########################################
 
@@ -212,7 +241,7 @@ class MCTSAgent:
     def get_next_move(self, board):
         return self.get_move(board)
     
-    
+
 ###########################################################################################
 ################################# MCTS w/ NN AGENTS #######################################
 
