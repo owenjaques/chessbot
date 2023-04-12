@@ -1,1 +1,0 @@
-This is a 2nd iteration of general attempt... Should probably be ignored for now

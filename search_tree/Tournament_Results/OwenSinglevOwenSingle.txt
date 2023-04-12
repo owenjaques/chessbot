@@ -1,0 +1,14 @@
+OWENSingleAgent wins: 0.0 
+OWENSingleAgent draws: 11 
+OWENSingleAgent games_played: 11 
+OWENSingleAgent failed_games: 0 
+OWENSingleAgent elo: 1000.0 
+OWENSingleAgent draws_against OWENSingleAgent : 0 
+OWENSingleAgent draws_against OWENSingleAgentTEST : 10 
+OWENSingleAgentTEST wins: 0.0 
+OWENSingleAgentTEST draws: 11 
+OWENSingleAgentTEST games_played: 11 
+OWENSingleAgentTEST failed_games: 0 
+OWENSingleAgentTEST elo: 1000.0 
+OWENSingleAgentTEST draws_against OWENSingleAgent : 10 
+OWENSingleAgentTEST draws_against OWENSingleAgentTEST : 0 

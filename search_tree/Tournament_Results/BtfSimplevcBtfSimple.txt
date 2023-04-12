@@ -1,0 +1,18 @@
+Black wins: 50.0 
+Black draws: 100 
+Black games_played: 100 
+Black failed_games: 0 
+Black elo: 1000.0 
+Black draws_against Black : 0 
+Black draws_against White : 100 
+Black wins_against White : 50.0 
+Black games_against White : 100 
+White wins: 50.0 
+White draws: 100 
+White games_played: 100 
+White failed_games: 0 
+White elo: 1000.0 
+White draws_against Black : 100 
+White wins_against Black : 50.0 
+White games_against Black : 100 
+White draws_against White : 0 

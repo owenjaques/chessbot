@@ -1,5 +1,23 @@
 env
 __pycache__
 *.pgn*
+*.csv*
+*.vscode*
+*/stockfish_15.1_win_x64_avx2/*
+*/stockfish_15.1_win_x64_popcnt/*
+search_tree/data_processing/data_processed/chess_puzzles - Copy.pkl
+search_tree/data_processing/data_processed/chess_puzzles - Copy (2).pkl
+search_tree/data_processing/data_processed/chess_puzzles.pkl
+search_tree/model_training/data/chess_puzzles - Copy.pkl
+search_tree/model_training/data/chess_puzzles.pkl
+search_tree/bad/pruning_experiments/saved_model/6percentbestmovelogreg.pkl
+search_tree/bad/pruning_experiments/saved_model/logreg500iter.pkl
+search_tree/bin
+
 neural_networks/bin
 neural_networks/chessbot_weights
+*.npz
+search_tree/cnn_experiments_puzzles/version_64x6/model/chess_conv_net_model_8_0
+search_tree/cnn_experiments_puzzles/version_64x12/model/chess_conv_net_model_1
+search_tree/cnn_experiments_puzzles/version_64x2/model/chess_conv_net_model_
+search_tree/cnn_experiments_puzzles/version_64x2/model/chess_conv_net_model__0_1681007240.6969626_0_1681016063.551254_0_1681016067.0496573
