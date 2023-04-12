@@ -82,10 +82,10 @@ class ChessTournament():
             # loop through the games per round
             for game in range(self.games_per_round):
                 # randomly select two agents
-                #agent1 = random.choice(self.agents)
-                #agent2 = random.choice(self.agents)
-                agent1 = self.agents[0]
-                agent2 = self.agents[1]
+                agent1 = random.choice(self.agents)
+                agent2 = random.choice(self.agents)
+                #agent1 = self.agents[0]
+                #agent2 = self.agents[1]
                 # make sure the agents are not the same
                 while agent1 == agent2:
                     agent2 = random.choice(self.agents)

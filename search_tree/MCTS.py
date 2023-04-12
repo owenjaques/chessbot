@@ -146,6 +146,8 @@ class MCTS():
                             value = self.evaluate(node)
                         else:
                             if self.value != None:
+                                if self.player_color == chess.WHITE:
+                                    value = -min(self.nodes[child].value for child in self.nodes[node].children)
                                 value = max(self.nodes[child].value for child in self.nodes[node].children)
                             else:
                                 # unsure about this... need to test more
@@ -229,7 +231,7 @@ class MCTS():
                     child.add_value(self.evaluate(child.board))
                 if self.make_graph:
                     # add the move to the graph
-                    graph_node = pydot.Node(chess.Board(board.fen()).fen() , shape='circle', label=chess.Board(board.fen()).fen(), size=str((child.value+20)*20), fillcolor="#131621", style="filled")
+                    graph_node = pydot.Node(chess.Board(board.fen()).fen() , shape='circle', label=chess.Board(board.fen()).fen(), size=str((-child.value+3)*5), fillcolor="#131621", style="filled")
                     self.dotgraph.add_node(graph_node)
                     edge = pydot.Edge(node, chess.Board(board.fen()).fen())
                     self.dotgraph.add_edge(edge) 
@@ -437,11 +439,18 @@ class MCTS():
                 edge = self.dotgraph.get_edge(self.nodes[node].parent, node)
                 edge[0].set_color("#31f54e")
                 edge[0].set_penwidth("75")
+                pynode = self.dotgraph.get_node(node)
+                pynode[0].set_color("#31f54e")
+                pynode[0].set_fillcolor("#31f54e")
             except:
                 try:
                     edge = self.dotgraph.get_edge(node, self.nodes[node].parent)
                     edge[0].set_color("#31f54e")
                     edge[0].set_penwidth("75")
+                    pynode = self.dotgraph.get_node(node)
+                    pynode = self.dotgraph.get_node(node)
+                    pynode[0].set_color("#31f54e")
+                    pynode[0].set_fillcolor("#31f54e")
                 except:
                     edge = pydot.Edge(self.nodes[node].parent, node, color="#31f54e", penwidth="75")
                     self.dotgraph.add_edge(edge)
