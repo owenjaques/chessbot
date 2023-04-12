@@ -119,7 +119,7 @@ class MCTSTest():
                 if board.is_stalemate() or board.is_insufficient_material() or board.can_claim_fifty_moves() or board.can_claim_threefold_repetition():
                     value = 1
                 elif board.result() == "1-0" or board.result() == "0-1" or board.is_checkmate():
-                    value = -2
+                    value = -1.5
                 if value == 0:
                     if self.expand_mode:
                         value = self.evaluate(node)

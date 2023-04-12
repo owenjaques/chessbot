@@ -1,6 +1,6 @@
 Stockfish1350 wins: 0.0 
-Stockfish1350 draws: 0 
-Stockfish1350 games_played: 0 
+Stockfish1350 draws: 1 
+Stockfish1350 games_played: 1 
 Stockfish1350 failed_games: 0 
 Stockfish1350 elo: 1000 
 Stockfish1350 draws_against Stockfish1350 : 0 
@@ -13,12 +13,14 @@ Stockfish1350 draws_against MCTSOwenSingleInput : 0
 Stockfish1350 draws_against MCTSOwenSimpleInput : 0 
 Stockfish1350 draws_against MCTSOwenBtfSimpleInput : 0 
 Stockfish1350 draws_against BTFSingleAgent : 0 
+Stockfish1350 wins_against BTFSingleAgent : 0.5 
+Stockfish1350 games_against BTFSingleAgent : 1 
 Stockfish1350 draws_against BTFSimpleAgent : 0 
 Stockfish1350 draws_against OWENSingleAgent : 0 
 Stockfish1350 draws_against OWENSimpleAgent : 0 
 Stockfish1500 wins: 0.0 
-Stockfish1500 draws: 0 
-Stockfish1500 games_played: 0 
+Stockfish1500 draws: 2 
+Stockfish1500 games_played: 2 
 Stockfish1500 failed_games: 0 
 Stockfish1500 elo: 1000 
 Stockfish1500 draws_against Stockfish1350 : 0 
@@ -32,13 +34,17 @@ Stockfish1500 draws_against MCTSOwenSimpleInput : 0
 Stockfish1500 draws_against MCTSOwenBtfSimpleInput : 0 
 Stockfish1500 draws_against BTFSingleAgent : 0 
 Stockfish1500 draws_against BTFSimpleAgent : 0 
+Stockfish1500 wins_against BTFSimpleAgent : 0.5 
+Stockfish1500 games_against BTFSimpleAgent : 1 
 Stockfish1500 draws_against OWENSingleAgent : 0 
+Stockfish1500 wins_against OWENSingleAgent : 0.5 
+Stockfish1500 games_against OWENSingleAgent : 1 
 Stockfish1500 draws_against OWENSimpleAgent : 0 
 Stockfish1650 wins: 0.0 
-Stockfish1650 draws: 1 
-Stockfish1650 games_played: 1 
+Stockfish1650 draws: 4 
+Stockfish1650 games_played: 4 
 Stockfish1650 failed_games: 0 
-Stockfish1650 elo: 1000 
+Stockfish1650 elo: 998.447599218164 
 Stockfish1650 draws_against Stockfish1350 : 0 
 Stockfish1650 draws_against Stockfish1500 : 0 
 Stockfish1650 draws_against Stockfish1650 : 0 
@@ -49,14 +55,20 @@ Stockfish1650 draws_against MCTSOwenSingleInput : 0
 Stockfish1650 draws_against MCTSOwenSimpleInput : 0 
 Stockfish1650 draws_against MCTSOwenBtfSimpleInput : 0 
 Stockfish1650 draws_against BTFSingleAgent : 0 
+Stockfish1650 wins_against BTFSingleAgent : 0.5 
+Stockfish1650 games_against BTFSingleAgent : 1 
 Stockfish1650 draws_against BTFSimpleAgent : 0 
-Stockfish1650 draws_against OWENSingleAgent : 0 
+Stockfish1650 draws_against OWENSingleAgent : 1 
+Stockfish1650 wins_against OWENSingleAgent : 1.0 
+Stockfish1650 games_against OWENSingleAgent : 2 
 Stockfish1650 draws_against OWENSimpleAgent : 0 
+Stockfish1650 wins_against OWENSimpleAgent : 0.5 
+Stockfish1650 games_against OWENSimpleAgent : 1 
 Stockfish1800 wins: 0.0 
-Stockfish1800 draws: 0 
-Stockfish1800 games_played: 0 
+Stockfish1800 draws: 1 
+Stockfish1800 games_played: 1 
 Stockfish1800 failed_games: 0 
-Stockfish1800 elo: 1000 
+Stockfish1800 elo: 999.4270120094047 
 Stockfish1800 draws_against Stockfish1350 : 0 
 Stockfish1800 draws_against Stockfish1500 : 0 
 Stockfish1800 draws_against Stockfish1650 : 0 
@@ -68,11 +80,13 @@ Stockfish1800 draws_against MCTSOwenSimpleInput : 0
 Stockfish1800 draws_against MCTSOwenBtfSimpleInput : 0 
 Stockfish1800 draws_against BTFSingleAgent : 0 
 Stockfish1800 draws_against BTFSimpleAgent : 0 
-Stockfish1800 draws_against OWENSingleAgent : 0 
+Stockfish1800 draws_against OWENSingleAgent : 1 
+Stockfish1800 wins_against OWENSingleAgent : 0.5 
+Stockfish1800 games_against OWENSingleAgent : 1 
 Stockfish1800 draws_against OWENSimpleAgent : 0 
 MCTSBTFSingleInput wins: 0.0 
-MCTSBTFSingleInput draws: 0 
-MCTSBTFSingleInput games_played: 0 
+MCTSBTFSingleInput draws: 2 
+MCTSBTFSingleInput games_played: 2 
 MCTSBTFSingleInput failed_games: 0 
 MCTSBTFSingleInput elo: 1000 
 MCTSBTFSingleInput draws_against Stockfish1350 : 0 
@@ -86,7 +100,11 @@ MCTSBTFSingleInput draws_against MCTSOwenSimpleInput : 0
 MCTSBTFSingleInput draws_against MCTSOwenBtfSimpleInput : 0 
 MCTSBTFSingleInput draws_against BTFSingleAgent : 0 
 MCTSBTFSingleInput draws_against BTFSimpleAgent : 0 
+MCTSBTFSingleInput wins_against BTFSimpleAgent : 0.5 
+MCTSBTFSingleInput games_against BTFSimpleAgent : 1 
 MCTSBTFSingleInput draws_against OWENSingleAgent : 0 
+MCTSBTFSingleInput wins_against OWENSingleAgent : 0.5 
+MCTSBTFSingleInput games_against OWENSingleAgent : 1 
 MCTSBTFSingleInput draws_against OWENSimpleAgent : 0 
 MCTSBTFSimpleInput wins: 0.0 
 MCTSBTFSimpleInput draws: 0 
@@ -143,8 +161,8 @@ MCTSOwenSimpleInput draws_against BTFSimpleAgent : 0
 MCTSOwenSimpleInput draws_against OWENSingleAgent : 0 
 MCTSOwenSimpleInput draws_against OWENSimpleAgent : 0 
 MCTSOwenBtfSimpleInput wins: 0.0 
-MCTSOwenBtfSimpleInput draws: 0 
-MCTSOwenBtfSimpleInput games_played: 0 
+MCTSOwenBtfSimpleInput draws: 1 
+MCTSOwenBtfSimpleInput games_played: 1 
 MCTSOwenBtfSimpleInput failed_games: 0 
 MCTSOwenBtfSimpleInput elo: 1000 
 MCTSOwenBtfSimpleInput draws_against Stockfish1350 : 0 
@@ -160,14 +178,20 @@ MCTSOwenBtfSimpleInput draws_against BTFSingleAgent : 0
 MCTSOwenBtfSimpleInput draws_against BTFSimpleAgent : 0 
 MCTSOwenBtfSimpleInput draws_against OWENSingleAgent : 0 
 MCTSOwenBtfSimpleInput draws_against OWENSimpleAgent : 0 
+MCTSOwenBtfSimpleInput wins_against OWENSimpleAgent : 0.5 
+MCTSOwenBtfSimpleInput games_against OWENSimpleAgent : 1 
 BTFSingleAgent wins: 0.0 
-BTFSingleAgent draws: 1 
-BTFSingleAgent games_played: 1 
+BTFSingleAgent draws: 2 
+BTFSingleAgent games_played: 2 
 BTFSingleAgent failed_games: 0 
-BTFSingleAgent elo: 1000.0 
+BTFSingleAgent elo: 1000 
 BTFSingleAgent draws_against Stockfish1350 : 0 
+BTFSingleAgent wins_against Stockfish1350 : 0.5 
+BTFSingleAgent games_against Stockfish1350 : 1 
 BTFSingleAgent draws_against Stockfish1500 : 0 
 BTFSingleAgent draws_against Stockfish1650 : 0 
+BTFSingleAgent wins_against Stockfish1650 : 0.5 
+BTFSingleAgent games_against Stockfish1650 : 1 
 BTFSingleAgent draws_against Stockfish1800 : 0 
 BTFSingleAgent draws_against MCTSBTFSingleInput : 0 
 BTFSingleAgent draws_against MCTSBTFSimpleInput : 0 
@@ -176,18 +200,22 @@ BTFSingleAgent draws_against MCTSOwenSimpleInput : 0
 BTFSingleAgent draws_against MCTSOwenBtfSimpleInput : 0 
 BTFSingleAgent draws_against BTFSingleAgent : 0 
 BTFSingleAgent draws_against BTFSimpleAgent : 0 
-BTFSingleAgent draws_against OWENSingleAgent : 1 
+BTFSingleAgent draws_against OWENSingleAgent : 0 
 BTFSingleAgent draws_against OWENSimpleAgent : 0 
-BTFSimpleAgent wins: 0.0 
-BTFSimpleAgent draws: 1 
-BTFSimpleAgent games_played: 1 
+BTFSimpleAgent wins: 1.0 
+BTFSimpleAgent draws: 2 
+BTFSimpleAgent games_played: 3 
 BTFSimpleAgent failed_games: 0 
-BTFSimpleAgent elo: 1000 
+BTFSimpleAgent elo: 1014 
 BTFSimpleAgent draws_against Stockfish1350 : 0 
 BTFSimpleAgent draws_against Stockfish1500 : 0 
+BTFSimpleAgent wins_against Stockfish1500 : 0.5 
+BTFSimpleAgent games_against Stockfish1500 : 1 
 BTFSimpleAgent draws_against Stockfish1650 : 0 
 BTFSimpleAgent draws_against Stockfish1800 : 0 
 BTFSimpleAgent draws_against MCTSBTFSingleInput : 0 
+BTFSimpleAgent wins_against MCTSBTFSingleInput : 0.5 
+BTFSimpleAgent games_against MCTSBTFSingleInput : 1 
 BTFSimpleAgent draws_against MCTSBTFSimpleInput : 0 
 BTFSimpleAgent draws_against MCTSOwenSingleInput : 0 
 BTFSimpleAgent draws_against MCTSOwenSimpleInput : 0 
@@ -195,39 +223,55 @@ BTFSimpleAgent draws_against MCTSOwenBtfSimpleInput : 0
 BTFSimpleAgent draws_against BTFSingleAgent : 0 
 BTFSimpleAgent draws_against BTFSimpleAgent : 0 
 BTFSimpleAgent draws_against OWENSingleAgent : 0 
+BTFSimpleAgent wins_against OWENSingleAgent : 1.0 
+BTFSimpleAgent games_against OWENSingleAgent : 1 
 BTFSimpleAgent draws_against OWENSimpleAgent : 0 
 OWENSingleAgent wins: 0.0 
-OWENSingleAgent draws: 1 
-OWENSingleAgent games_played: 1 
+OWENSingleAgent draws: 5 
+OWENSingleAgent games_played: 6 
 OWENSingleAgent failed_games: 0 
-OWENSingleAgent elo: 1000.0 
+OWENSingleAgent elo: 988.1253887724313 
 OWENSingleAgent draws_against Stockfish1350 : 0 
 OWENSingleAgent draws_against Stockfish1500 : 0 
-OWENSingleAgent draws_against Stockfish1650 : 0 
-OWENSingleAgent draws_against Stockfish1800 : 0 
+OWENSingleAgent wins_against Stockfish1500 : 0.5 
+OWENSingleAgent games_against Stockfish1500 : 1 
+OWENSingleAgent draws_against Stockfish1650 : 1 
+OWENSingleAgent wins_against Stockfish1650 : 1.0 
+OWENSingleAgent games_against Stockfish1650 : 2 
+OWENSingleAgent draws_against Stockfish1800 : 1 
+OWENSingleAgent wins_against Stockfish1800 : 0.5 
+OWENSingleAgent games_against Stockfish1800 : 1 
 OWENSingleAgent draws_against MCTSBTFSingleInput : 0 
+OWENSingleAgent wins_against MCTSBTFSingleInput : 0.5 
+OWENSingleAgent games_against MCTSBTFSingleInput : 1 
 OWENSingleAgent draws_against MCTSBTFSimpleInput : 0 
 OWENSingleAgent draws_against MCTSOwenSingleInput : 0 
 OWENSingleAgent draws_against MCTSOwenSimpleInput : 0 
 OWENSingleAgent draws_against MCTSOwenBtfSimpleInput : 0 
-OWENSingleAgent draws_against BTFSingleAgent : 1 
+OWENSingleAgent draws_against BTFSingleAgent : 0 
 OWENSingleAgent draws_against BTFSimpleAgent : 0 
+OWENSingleAgent wins_against BTFSimpleAgent : 0.0 
+OWENSingleAgent games_against BTFSimpleAgent : 1 
 OWENSingleAgent draws_against OWENSingleAgent : 0 
 OWENSingleAgent draws_against OWENSimpleAgent : 0 
 OWENSimpleAgent wins: 0.0 
-OWENSimpleAgent draws: 0 
-OWENSimpleAgent games_played: 0 
+OWENSimpleAgent draws: 2 
+OWENSimpleAgent games_played: 2 
 OWENSimpleAgent failed_games: 0 
 OWENSimpleAgent elo: 1000 
 OWENSimpleAgent draws_against Stockfish1350 : 0 
 OWENSimpleAgent draws_against Stockfish1500 : 0 
 OWENSimpleAgent draws_against Stockfish1650 : 0 
+OWENSimpleAgent wins_against Stockfish1650 : 0.5 
+OWENSimpleAgent games_against Stockfish1650 : 1 
 OWENSimpleAgent draws_against Stockfish1800 : 0 
 OWENSimpleAgent draws_against MCTSBTFSingleInput : 0 
 OWENSimpleAgent draws_against MCTSBTFSimpleInput : 0 
 OWENSimpleAgent draws_against MCTSOwenSingleInput : 0 
 OWENSimpleAgent draws_against MCTSOwenSimpleInput : 0 
 OWENSimpleAgent draws_against MCTSOwenBtfSimpleInput : 0 
+OWENSimpleAgent wins_against MCTSOwenBtfSimpleInput : 0.5 
+OWENSimpleAgent games_against MCTSOwenBtfSimpleInput : 1 
 OWENSimpleAgent draws_against BTFSingleAgent : 0 
 OWENSimpleAgent draws_against BTFSimpleAgent : 0 
 OWENSimpleAgent draws_against OWENSingleAgent : 0 

@@ -140,6 +140,19 @@ class StockfishAgent1650:
         move = self.stockfish.get_best_move()
         return move
     
+class StockfishAgent1800:
+    def __init__(self):
+        self.path = os.getcwd()+"/stockfish_15.1_win_x64_avx2/stockfish-windows-2022-x86-64-avx2.exe"
+        self.stockfish = Stockfish(self.path, parameters={"Threads": 1, "UCI_LimitStrength": True, "Skill Level": 20})
+        self.name = "Stockfish1800"
+    def initialize(self, color):
+        pass
+    def get_move(self, board):
+        self.stockfish.set_fen_position(board.fen())
+        self.stockfish.update_engine_parameters({"UCI_Elo:": 1800})
+        move = self.stockfish.get_best_move()
+        return move
+    
 
 
 

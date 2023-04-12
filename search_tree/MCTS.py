@@ -217,11 +217,11 @@ class MCTS():
             board = chess.Board(board)
         if board.is_game_over(claim_draw=True):
             if board.result() == "1-0" or board.result() == "0-1":
-                return -1.3
+                return -1.2
             else:
                 return 0
         elif board.is_checkmate():
-            return -1.3
+            return -1.2
         else:
             return self.heuristic(board)
     

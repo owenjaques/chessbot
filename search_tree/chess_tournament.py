@@ -99,7 +99,7 @@ class ChessTournament():
                     except:
                         continue
                     # calculate ELO rating and update the results
-                    if elo_result != 0:
+                    if elo_result != 0 and elo_result != None:
                     # update the tournament results
                         if agent1.name not in tournament_results.results:
                             tournament_results.results[agent1.name] = game_results.results[agent1.name]
@@ -116,14 +116,15 @@ class ChessTournament():
                         tournament_results.results[agent1.name + " draws_against " + agent2.name] += 1
                         tournament_results.results[agent2.name + " draws_against " + agent1.name] += 1
                     # update the results of each agent against each other agent
-                    if agent1.name + " " + agent2.name not in tournament_results.results:
-                        tournament_results.results[agent1.name + " " + agent2.name] = game_results.results[agent1.name]
-                    else:
-                        tournament_results.results[agent1.name + " " + agent2.name] += game_results.results[agent1.name]
-                    if agent2.name + " " + agent1.name not in tournament_results.results:
-                        tournament_results.results[agent2.name + " " + agent1.name] = game_results.results[agent2.name]
-                    else:
-                        tournament_results.results[agent2.name + " " + agent1.name] += game_results.results[agent2.name]
+                    if elo_result != 0 and elo_result != None:
+                        if agent1.name + " " + agent2.name not in tournament_results.results:
+                            tournament_results.results[agent1.name + " " + agent2.name] = game_results.results[agent1.name]
+                        else:
+                            tournament_results.results[agent1.name + " " + agent2.name] += game_results.results[agent1.name]
+                        if agent2.name + " " + agent1.name not in tournament_results.results:
+                            tournament_results.results[agent2.name + " " + agent1.name] = game_results.results[agent2.name]
+                        else:
+                            tournament_results.results[agent2.name + " " + agent1.name] += game_results.results[agent2.name]
                     # save the number of games played against each agent
                     if agent1.name + " " + agent2.name + " games played" not in tournament_results.results:
                         tournament_results.results[agent1.name + " " + agent2.name + " games played"] = 1
@@ -144,7 +145,8 @@ class ChessTournament():
                         tournament_results.results[agent2.name + " games played"] += 1
                     # update the elo rating
                     try:
-                        self.calculate_elo_rating(tournament_results, agent1, agent2, elo_result)
+                        if elo_result != None:
+                            self.calculate_elo_rating(tournament_results, agent1, agent2, elo_result)
                     except:
                         print("Failed to calculate elo rating")
                         continue
@@ -189,44 +191,48 @@ class ChessTournament():
         print("Game started!")
         print(agent1.name + " " + agent2.name + ": ")
         # loop through the moves
-        while not board.is_game_over( claim_draw=True ) and not board.is_stalemate() and not board.is_insufficient_material() and not board.is_fivefold_repetition():
+        while(not board.outcome()):
             move = None
-            try:
-                # get the move from the first agent
-                move = agent1.get_move(board)
-                # make the move
-                board.push(move)
-                if self.should_visualize:
-                    clear_output(wait=True)
-                    display(board)
-                    print("White: "  + agent1.name + "  Black: " + agent2.name)
-            except:
-                move = None
-            try:
-                # get the move from the second agent
-                move = agent2.get_move(board)
-                # make the move
-                board.push(move)
-                if self.should_visualize:
-                    clear_output(wait=True)
-                    display(board)
-                    print("White: " + agent1.name + "  Black: " + agent2.name )
-            except:
-                move = None
+            if board.turn:
+                try:
+                    # get the move from the first agent
+                    move = agent1.get_move(board)
+                    # make the move
+                    board.push(move)
+                    if self.should_visualize:
+                        clear_output(wait=True)
+                        display(board)
+                        print("White: "  + agent1.name + "  Black: " + agent2.name)
+                except:
+                    move = None
+            else:
+                try:
+                    # get the move from the second agent
+                    move = agent2.get_move(board)
+                    # make the move
+                    board.push(move)
+                    if self.should_visualize:
+                        clear_output(wait=True)
+                        display(board)
+                        print("White: " + agent1.name + "  Black: " + agent2.name )
+                except:
+                    move = None
         # get the result of the game
         
         result = board.result()
         # update the game results
-        elo_result = 0
-        if result == "1-0":
+        elo_result = None
+        if result == "1/2-1/2":
+            game_results.results[agent1.name] += 0.5
+            game_results.results[agent2.name] += 0.5
+            elo_result = 0
+        elif result == "1-0":
             game_results.results[agent1.name] += 1
             elo_result = 1
         elif result == "0-1":
             game_results.results[agent2.name] += 1
             elo_result = -1
-        else:
-            game_results.results[agent1.name] += 0.5
-            game_results.results[agent2.name] += 0.5
+
 
         # print the game result
         print(agent1.name + " " + agent2.name + ": " + result)
