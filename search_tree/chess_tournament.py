@@ -151,7 +151,8 @@ class ChessTournament():
                         print("Failed to calculate elo rating")
                         continue
                     try:
-                        self.save_progress(tournament_results=tournament_results)
+                        if elo_result != None:
+                            self.save_progress(tournament_results=tournament_results)
                     except: 
                         print("Failed to save progress")
                         continue
@@ -217,6 +218,9 @@ class ChessTournament():
                         print("White: " + agent1.name + "  Black: " + agent2.name )
                 except:
                     move = None
+            if move == None:
+                print("Move failed!, moving onto next game")
+                break
         # get the result of the game
         
         result = board.result()
@@ -401,10 +405,10 @@ class ChessTournament():
 
 def main():
     # set the number of rounds
-    rounds = 2
+    rounds = 1
 
     # set the number of games per round
-    games_per_round = 2
+    games_per_round = 1
 
     # set the number of agents
     agents = [RandomAgent(), 
@@ -422,18 +426,13 @@ def main():
                 ChessBotAgentOwenSimpleInput(),
                 ]
     
+    agentsstockfish = [ StockfishAgent1650(),
+                    StockfishAgent1800()]
+    
     tourny = ChessTournament(agents, rounds, games_per_round)
 
     # run the tournament
     tournament_results = tourny.run_tournament()
-    # print the tournament results
-    tourny.print_tournament_results(tournament_results)
-    # save the tournament results
-    tourny.save_progress(tournament_results)
-
-    # plot the tournament results
-    tourny.plot_tournament_results(tournament_results)
-
 
 
 if __name__ == "__main__":

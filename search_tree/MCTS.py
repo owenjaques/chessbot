@@ -20,6 +20,12 @@ import queue
 import heapq
 import sys
 
+import pydot
+import pydotplus
+import graphviz
+
+# import for write_png
+
 
 import contextlib
 
@@ -36,7 +42,7 @@ from search_tree.experiments.CNN.board_processing import Boardprocessing
 # have pretty heavily deviated from the original MCTS implementation
 # is more of a UCT implementation now mixed with a few other ideas
 class MCTS():
-    def __init__(self, max_time=10, num_simulations=2500, color=chess.WHITE, max_depth=50, policy_nn=None, value_nn=None, value_nn_2=None, model_input=None, use_heap=False, expand_mode=False):
+    def __init__(self, max_time=10, num_simulations=750, color=chess.WHITE, max_depth=50, policy_nn=None, value_nn=None, value_nn_2=None, model_input=None, use_heap=False, expand_mode=False, make_graph=False):
         self.board = chess.Board()
         self.player_color = color
         self.time_limit = max_time
@@ -52,6 +58,13 @@ class MCTS():
         self.move_count = 0
         self.expand_mode = expand_mode
         self.depth = 0
+        self.make_graph = make_graph
+        if self.make_graph:
+            self.dotgraph = pydot.Dot('Chess_Search', graph_type='digraph')
+            self.dotgraph.set_edge_defaults(thickness=2, color='black')
+            self.dotgraph.set_node_defaults(shape='circle', style='filled', fillcolor='white', color='black', fontcolor='black', fontsize=10, width=0.5, height=0.5)
+            self.dotgraph.set_graph_defaults(size='11,11', dpi=300, rankdir='LR', ranksep='0.5', nodesep='0.5')
+            self.dotgraph.set_suppress_disconnected(True)
 
 
     def get_best_move_value(self, board):
@@ -61,6 +74,9 @@ class MCTS():
 
     def set_root(self, board):
         self.root = board.fen()
+        if self.make_graph:
+            # add root to graph
+            self.dotgraph.add_node(pydot.Node(self.root, label=self.root, shape='box'))
         self.move_count += 1
         if self.root not in self.nodes:
             self.nodes = {}
@@ -107,10 +123,18 @@ class MCTS():
             # get the next node to simulate
             if self.heap_mark and len(self.leaf_heapq) > 0:
                 node = heapq.heappop(self.leaf_heapq).board.fen()
+                if self.make_graph:
+                    # make the node in the graph red
+                    if self.dotgraph.get_node(self.nodes[node].board.fen()) != []:
+                        self.dotgraph.get_node(self.nodes[node].board.fen())[0].set_label(str(self.nodes[node].visits))
             else:
                 node = self.root
                 while not self.nodes[node].terminal:
                     node = self.select(node)
+                    if self.make_graph:
+                        # add a mark to the node in the graph to indicate how many times it has been visited
+                        if self.dotgraph.get_node(self.nodes[node].board.fen()) != []:
+                            self.dotgraph.get_node(self.nodes[node].board.fen())[0].set_label(str(self.nodes[node].visits))
                     if node == None:
                         break
 
@@ -148,6 +172,11 @@ class MCTS():
 
                 self.backpropagate(node, value)
 
+        if self.make_graph:
+            # save the graph to a file
+            self.dotgraph.write('graph.dot')
+            return self.dotgraph
+  
         # return the best move
         return self.best_move()
     
@@ -182,6 +211,13 @@ class MCTS():
             for move in legal_moves:
                 board = chess.Board(board_start.fen())
                 board.push(move)
+                if self.make_graph:
+                    # add the move to the graph
+                    graph_node = pydot.Node(board.fen())
+                    self.dotgraph.add_node(graph_node)
+                    edge = pydot.Edge(node, board.fen(), label=move.uci())
+                    self.dotgraph.add_edge(edge) 
+
                 child = Node()
                 child.set_board(board.fen())
                 child.set_parent(self.nodes[node].board.fen())
@@ -352,6 +388,15 @@ class MCTS():
                         break
                     move = random.choice(legal_moves)
                     sim_board.push(move)
+                    if self.make_graph:
+                        # create a new node in the pydot graph
+                        new_node = pydot.Node(sim_board.fen())
+                        # add the new node to the graph
+                        self.dotgraph.add_node(new_node)
+                        # create an edge between the current node and the new node
+                        edge = pydot.Edge(board.fen(), sim_board.fen(), label=move.uci())
+                        # add the edge to the graph
+                        self.dotgraph.add_edge(edge)
                 sim_turn = -1
                 if sim_board.turn == board.turn:
                     sim_turn = 1
