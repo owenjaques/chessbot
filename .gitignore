@@ -16,3 +16,8 @@ search_tree/bin
 
 neural_networks/bin
 neural_networks/chessbot_weights
+*.npz
+search_tree/cnn_experiments_puzzles/version_64x6/model/chess_conv_net_model_8_0
+search_tree/cnn_experiments_puzzles/version_64x12/model/chess_conv_net_model_1
+search_tree/cnn_experiments_puzzles/version_64x2/model/chess_conv_net_model_
+search_tree/cnn_experiments_puzzles/version_64x2/model/chess_conv_net_model__0_1681007240.6969626_0_1681016063.551254_0_1681016067.0496573
